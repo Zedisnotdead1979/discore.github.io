@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disc Dog Scorer</title>
+    <!-- Lien vers la police d'icônes de Google -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Librairie pour la génération d'image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Réinitialisation de base et configuration de la boîte de modèle */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Styles de base du corps */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Variables CSS pour la thématisation */
+        :root {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --app-bg: #ffffff;
+            --border-color: #ddd;
+            --header-text: #ffffff;
+            --button-bg: #f0f0f0;
+            --button-text: #333;
+            --input-bg: #ffffff;
+            --input-border: #ddd;
+            --history-action-color: #666;
+            
+            --header-bg: #2196F3; /* Thème bleu par défaut */
+        }
+
+        /* --- Thèmes de couleur --- */
+        [data-color-theme="blue"] { --header-bg: #2196F3; }
+        [data-color-theme="green"] { --header-bg: #4CAF50; }
+        [data-color-theme="marron-cuir"] { --header-bg: #8D6E63; }
+        [data-color-theme="violet"] { --header-bg: #673AB7; }
+        [data-color-theme="rose"] { --header-bg: #E91E63; }
+        [data-color-theme="turquoise"] { --header-bg: #009688; }
+        [data-color-theme="ardoise"] { --header-bg: #607D8B; }
+        [data-color-theme="rouge"] { --header-bg: #d32f2f; }
+        [data-color-theme="jaune"] { --header-bg: #FBC02D; }
+        [data-color-theme="cyan"] { --header-bg: #00BCD4; }
+        [data-color-theme="citron-vert"] { --header-bg: #CDDC39; }
+        [data-color-theme="graphite"] { --header-bg: #424242; }
+
+        /* Thème sombre */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --app-bg: #1e1e1e;
+            --border-color: #333;
+            --button-bg: #333;
+            --button-text: #ffffff;
+            --input-bg: #2a2a2a;
+            --input-border: #555;
+            --history-action-color: #ccc;
+        }
+
+        /* --- Disposition principale --- */
+        .app-container {
+            max-width: 400px;
+            margin: 20px auto;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            background-color: var(--app-bg);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-icon {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+
+        .nav-icon:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .nav-icon.active {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Gestion de l'affichage des vues */
+        .view { display: none; }
+        .view.active { display: flex; flex-direction: column; flex: 1; }
+
+        /* --- Vue de Mesure --- */
+        #measureView .action-buttons {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: var(--button-bg);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer.running { animation: blink-border 1s ease-in-out infinite; }
+        @keyframes blink-border {
+            0%, 100% { box-shadow: 0 0 0 3px var(--header-bg); }
+            50% { box-shadow: 0 0 0 3px transparent; }
+        }
+
+        .timer.green { color: #4CAF50; }
+        .timer.yellow { color: #FF9800; }
+        .timer.red { color: #F44336; }
+        .timer.critical { color: #000; background-color: #F44336; }
+
+        .counting-buttons { display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px; }
+        .main-count-row { display: flex; gap: 15px; }
+
+        .main-count-button {
+            flex: 2;
+            padding: 45px;
+            font-size: 1.6em;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .main-count-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .take-button {
+            width: 100%;
+            padding: 25px;
+            font-size: 1.4em;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            background-color: #FF9800;
+        }
+
+        .take-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .catch-btn { background-color: #4CAF50; }
+        .catch-btn:hover:not(:disabled) { background-color: #45a049; }
+        .drop-btn { background-color: #F44336; }
+        .drop-btn:hover:not(:disabled) { background-color: #da190b; }
+        .take-button:hover:not(:disabled) { background-color: #e68900; }
+
+        .action-buttons { display: flex; gap: 10px; }
+        .action-button { flex: 1; padding: 15px; font-size: 1em; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; background-color: var(--button-bg); color: var(--button-text); }
+        .action-button:hover { opacity: 0.8; }
+        #undoBtn, #shareBtn { background-color: var(--header-bg); color: var(--header-text); border: none; }
+        #endRunBtn { border: 2px solid #F44336; background-color: var(--button-bg); color: var(--button-text); }
+        #razBtn { border: 2px solid #F44336; }
+        #saveBtn { border: 2px solid #4CAF50; }
+
+        .stats-display { margin-bottom: 10px; }
+        .main-stat-block { background-color: var(--button-bg); border-radius: 10px; padding: 10px; text-align: center; }
+        .main-stat-line { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
+        .total-throws { font-size: 2em; font-weight: bold; color: var(--header-bg); margin-bottom: 0; }
+        .total-label { font-size: 1.2em; margin-bottom: 0; color: var(--text-color); font-weight: bold; }
+        .live-timeline { background-color: var(--input-bg); border-radius: 8px; padding: 10px; min-height: 50px; overflow-x: auto; white-space: nowrap; border: 1px solid var(--input-border); }
+        .live-timeline-item { display: inline-block; width: 25px; height: 25px; line-height: 25px; text-align: center; margin: 1px; border-radius: 50%; font-weight: bold; color: white; font-size: 0.8em; }
+        .live-timeline-catch { background-color: #4CAF50; }
+        .live-timeline-drop { background-color: #F44336; }
+        .live-timeline-take { background-color: #FF9800; }
+
+        /* --- Vue des Résultats --- */
+        .results-section { margin-bottom: 25px; }
+        .results-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; color: var(--header-bg); }
+        .score-summary { text-align: center; font-size: 1.4em; font-weight: bold; color: var(--header-bg); margin: 20px 0; }
+        .timeline { background-color: var(--button-bg); border-radius: 10px; padding: 15px; overflow-x: auto; white-space: nowrap; margin-bottom: 25px; }
+        .timeline-item { display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; margin: 2px; border-radius: 50%; font-weight: bold; color: white; }
+        .timeline-catch { background-color: #4CAF50; }
+        .timeline-drop { background-color: #F44336; }
+        .timeline-take { background-color: #FF9800; }
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .result-box { background-color: var(--button-bg); border-radius: 15px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .result-box .stat-value { font-size: 2em; font-weight: bold; margin: 5px 0; }
+        .result-icon { font-size: 2.5em !important; }
+        .catch-icon { color: #4CAF50; }
+        .drop-icon { color: #F44336; }
+        .take-icon { color: #FF9800; }
+        .time-icon { color: var(--header-bg); }
+
+        /* --- Vue Historique --- */
+        .history-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .sort-button, .export-button, .import-button { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 5px; background-color: var(--button-bg); color: var(--button-text); cursor: pointer; font-size: 0.9em; }
+        .export-button { background-color: var(--header-bg); color: var(--header-text); border-color: var(--header-bg); }
+        .import-button { background-color: transparent; color: var(--header-bg); border: 2px solid var(--header-bg); font-weight: bold; }
+        .sort-button.active { background-color: var(--header-bg); color: var(--header-text); }
+        .import-status { text-align: center; margin-bottom: 15px; font-style: italic; color: #999; }
+        .history-list { }
+        .history-item { background-color: var(--button-bg); padding: 15px; margin-bottom: 10px; border-radius: 10px; }
+        .history-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .history-header-info { flex: 1; }
+        .dog-name { font-weight: bold; font-size: 1.1em; }
+        .run-tag { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; }
+        .history-item-actions { display: flex; gap: 10px; }
+        .history-action-btn { background: none; border: none; cursor: pointer; padding: 5px; color: var(--history-action-color); border-radius: 50%; }
+        .history-action-btn:hover { background-color: rgba(0,0,0,0.1); }
+        [data-theme="dark"] .history-action-btn:hover { background-color: rgba(255,255,255,0.1); }
+        .history-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9em; }
+        .history-score { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.9em; font-weight: bold; display: inline-block; }
+
+        /* --- Vue Options --- */
+        .option-group { background-color: var(--button-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .option-title { font-weight: bold; margin-bottom: 15px; color: var(--header-bg); }
+        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--header-bg); }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .danger-button { background-color: #F44336; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .danger-button:hover { background-color: #da190b; }
+        .version-container { margin-top: auto; padding-top: 20px; text-align: center; color: var(--text-color); opacity: 0.6; font-size: 0.9em; }
+
+        .dog-management-form { display: flex; gap: 10px; margin-bottom: 15px; }
+        .dog-management-form .form-input { flex-grow: 1; }
+        .dog-management-form .action-button { flex-grow: 0; flex-shrink: 0; padding: 10px; line-height: 1; background-color: var(--header-bg); color: var(--header-text); }
+        .dog-profiles-list { max-height: 200px; overflow-y: auto; }
+        .dog-profile-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        .dog-profile-item:last-child { border-bottom: none; }
+        .dog-profile-name { font-weight: 500; }
+        .dog-profile-actions { display: flex; gap: 8px; }
+        .dog-profile-actions .history-action-btn { font-size: 1.2em; }
+
+        .color-theme-selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 15px; padding-top: 10px; }
+        .color-swatch { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform 0.2s ease, border-color 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.active { border-color: var(--header-bg); transform: scale(1.15); }
+        .color-swatch.active::after { content: 'check'; font-family: 'Material Icons'; color: var(--header-text); font-size: 20px; }
+
+        /* --- Modales --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background-color: var(--app-bg); margin: 5vh auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+        .modal-title { color: var(--header-bg); margin-bottom: 20px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .modal-button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; text-decoration: none; }
+        .modal-confirm { background-color: var(--header-bg); color: white; }
+        .modal-cancel { background-color: #ccc; color: #333; }
+
+        .save-form { padding: 0; margin: 0; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid var(--input-border); border-radius: 5px; background-color: var(--input-bg); color: var(--text-color); }
+        .suggestions { background-color: var(--input-bg); border: 1px solid var(--input-border); border-top: none; max-height: 150px; overflow-y: auto; position: absolute; width: calc(100% - 40px); z-index: 1001; }
+        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid var(--input-border); }
+        .suggestion-item:hover { background-color: var(--button-bg); }
+        .tag-preview { font-style: italic; color: var(--header-bg); margin-top: 5px; text-align: left; }
+
+        /* --- Partage --- */
+        .share-card { display: block; position: absolute; left: -9999px; top: -9999px; width: 350px; background-color: var(--app-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        .share-header { padding: 10px; background-color: var(--header-bg); color: var(--header-text); text-align: center; }
+        .share-body { padding: 20px; }
+        #shareDogName { text-align: center; font-size: 2em; margin-bottom: 5px; color: var(--header-bg); }
+        #shareDate { text-align: center; font-size: 0.9em; margin-bottom: 20px; color: var(--text-color); opacity: 0.7; }
+        .share-score-container { text-align: center; margin-bottom: 20px; }
+        .share-score { font-size: 4em; font-weight: bold; color: var(--header-bg); line-height: 1; }
+        .share-score-label { font-size: 1.2em; }
+        .share-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; margin-bottom: 20px; }
+        .share-stat span:first-child { font-size: 1.8em; font-weight: bold; display: block; }
+        .share-stat span:last-child { font-size: 0.8em; text-transform: uppercase; }
+        .share-timeline { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+        .share-timeline .timeline-item { width: 20px; height: 20px; line-height: 20px; font-size: 0.7em;}
+        .share-footer { background-color: var(--button-bg); padding: 5px; text-align: center; font-size: 0.7em; opacity: 0.6; }
+
+        #shareImageContainer img { max-width: 100%; border-radius: 10px; }
+        .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid var(--header-bg); width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- Media Queries pour la responsivité --- */
+        @media (max-width: 480px) {
+            .app-container { margin: 10px; border-radius: 10px; }
+            .timer { font-size: 2.5em; }
+            .count-button { padding: 15px; font-size: 1.1em; }
+            .history-controls { flex-direction: column; }
+            .sort-button, .export-button, .import-button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Conteneur principal de l'application -->
+    <div class="app-container">
+        <!-- En-tête de l'application avec la navigation -->
+        <div class="header">
+            <div class="nav-icon" id="optionsNav"><span class="material-icons">menu</span></div>
+            <div class="nav-icon active" id="homeNav"><span class="material-icons">home</span></div>
+            <div class="nav-icon" id="historyNav"><span class="material-icons">history</span></div>
+        </div>
+
+        <!-- Contenu principal qui change en fonction de la vue -->
+        <div class="content">
+            <!-- Vue de mesure (active par défaut) -->
+            <div class="view active" id="measureView">
+                <div class="timer-container"><div class="timer" id="timer">00:00</div></div>
+                <div class="stats-display"><div class="main-stat-block"><div class="main-stat-line"><div class="total-label">Total Lancés :</div><div class="total-throws" id="totalThrows">0</div></div><div class="live-timeline" id="liveTimeline"><span style="color: #999; font-style: italic;">Aucun lancer pour le moment</span></div></div></div>
+                <div class="counting-buttons"><div class="main-count-row"><button class="main-count-button catch-btn" id="catchBtn">CATCH</button><button class="main-count-button drop-btn" id="dropBtn">DROP</button></div><button class="take-button" id="takeBtn">TAKE</button></div>
+                <div class="action-buttons"><button class="action-button" id="undoBtn">UNDO</button><button class="action-button" id="endRunBtn">Fin du Run</button></div>
+            </div>
+
+            <!-- Vue des résultats -->
+            <div class="view" id="resultsView">
+                <div class="results-section">
+                    <div class="results-title">Résultats du Run</div>
+                    <p class="score-summary" id="scoreSummary"></p>
+                    <div class="timeline" id="timeline"></div>
+                    <div class="results-grid">
+                        <div class="result-box"><span class="material-icons result-icon catch-icon">check_circle</span><div class="stat-value" id="resultCatches">0</div><div class="stat-label">Catches</div></div>
+                        <div class="result-box"><span class="material-icons result-icon drop-icon">cancel</span><div class="stat-value" id="resultDrops">0</div><div class="stat-label">Drops</div></div>
+                        <div class="result-box"><span class="material-icons result-icon take-icon">front_hand</span><div class="stat-value" id="resultTakes">0</div><div class="stat-label">Takes</div></div>
+                        <div class="result-box"><span class="material-icons result-icon time-icon">timer</span><div class="stat-value" id="resultTime">00:00</div><div class="stat-label">Temps Final</div></div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-button" id="razBtn">RAZ</button>
+                    <button class="action-button" id="shareBtn">Partager</button>
+                    <button class="action-button" id="saveBtn">SAVE</button>
+                </div>
+            </div>
+
+            <!-- Vue de l'historique -->
+            <div class="view" id="historyView">
+                <div class="history-controls">
+                    <button class="sort-button" data-sort="date">Date/Heure</button>
+                    <button class="sort-button" data-sort="name">Nom (A-Z)</button>
+                    <button class="sort-button" data-sort="score">Score</button>
+                    <label for="importCsvInput" class="import-button">Importer CSV</label>
+                    <input type="file" id="importCsvInput" accept=".csv" style="display: none;">
+                    <button class="export-button" id="exportBtn">Exporter CSV</button>
+                </div>
+                <div id="importStatus" class="import-status"></div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+
+            <!-- Vue des options -->
+            <div class="view" id="optionsView">
+                <div class="option-group">
+                    <div class="option-title">Gérer les chiens</div>
+                    <div class="dog-management-form"><input type="text" id="newDogNameInput" class="form-input" placeholder="Ajouter un nouveau chien..."><button id="addDogBtn" class="action-button material-icons">add_circle</button></div>
+                    <div id="dogProfilesList" class="dog-profiles-list"></div>
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Thème Sombre/Clair</div>
+                    <label class="toggle-switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+                    <span id="themeLabel">Clair</span>
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Thème de Couleur</div>
+                    <div class="color-theme-selector" id="colorThemeSelector"></div>
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Retour Haptique (Vibration)</div>
+                    <label class="toggle-switch"><input type="checkbox" id="hapticToggle"><span class="slider"></span></label>
+                    <span id="hapticLabel">Activé</span>
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Bouton Partager</div>
+                    <label class="toggle-switch"><input type="checkbox" id="shareToggle"><span class="slider"></span></label>
+                    <span id="shareLabel">Activé</span>
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Boutons d'import/export CSV</div>
+                    <label class="toggle-switch"><input type="checkbox" id="csvToggle"><span class="slider"></span></label>
+                    <span id="csvLabel">Activé</span>
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Seuil Minimum de Lancés</div>
+                    <input type="number" class="form-input" id="seuilInput" min="0" value="0">
+                </div>
+                <div class="option-group">
+                    <div class="option-title">Données</div>
+                    <button class="danger-button" id="purgeBtn">Purger l'historique</button>
+                </div>
+                <div class="version-container"><p id="versionDisplay"></p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <div class="modal" id="confirmModal"><div class="modal-content"><p id="modalMessage"></p><div class="modal-buttons"><button class="modal-button modal-cancel" id="modalCancel">Annuler</button><button class="modal-button modal-confirm" id="modalConfirm">Confirmer</button></div></div></div>
+    <div class="modal" id="saveModal"><div class="modal-content"><h3 class="modal-title">Sauvegarder le Run</h3><div class="save-form" id="saveForm"><div class="form-group"><label class="form-label">Nom du chien</label><input type="text" class="form-input" id="dogNameInput" placeholder="Entrez le nom du chien"><div class="suggestions" id="suggestions" style="display: none;"></div><div class="tag-preview" id="tagPreview"></div></div><div class="form-group"><label class="form-label">Notes (facultatif)</label><textarea class="form-input" id="notesInput" rows="3" placeholder="Ajoutez des remarques..."></textarea></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="cancelSaveBtn">Annuler</button><button class="modal-button modal-confirm" id="confirmSaveBtn">Enregistrer</button></div></div></div></div>
+    <div class="modal" id="editModal"><div class="modal-content"><h3 class="modal-title">Modifier le Run</h3><div class="form-group"><label class="form-label">Nom du chien</label><input type="text" class="form-input" id="editDogNameInput"></div><div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="editNotesInput" rows="3"></textarea></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="cancelUpdateBtn">Annuler</button><button class="modal-button modal-confirm" id="confirmUpdateBtn">Mettre à jour</button></div></div></div>
+    <div class="modal" id="shareModal"><div class="modal-content"><h3 class="modal-title">Partager le Résultat</h3><div id="shareImageContainer"><div class="loader"></div></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="closeShareBtn">Fermer</button><a href="#" class="modal-button modal-confirm" id="downloadShareBtn" download="disc-dog-result.png">Télécharger</a></div></div></div>
+
+    <!-- Template pour l'image de partage (caché) -->
+    <div id="shareCard" class="share-card">
+        <div class="share-header"><h3>Disc Dog Scorer</h3></div>
+        <div class="share-body">
+            <h2 id="shareDogName"></h2><p id="shareDate"></p>
+            <div class="share-score-container"><div id="shareScore" class="share-score"></div><div class="share-score-label">Score</div></div>
+            <div class="share-stats-grid">
+                <div class="share-stat"><span id="shareCatches"></span><span>Catches</span></div>
+                <div class="share-stat"><span id="shareDrops"></span><span>Drops</span></div>
+                <div class="share-stat"><span id="shareTakes"></span><span>Takes</span></div>
+                <div class="share-stat"><span id="shareTotal"></span><span>Total</span></div>
+            </div>
+            <div class="share-timeline" id="shareTimeline"></div>
+        </div>
+        <div class="share-footer"><p>Généré avec Disc Dog Scorer</p></div>
+    </div>
+
+    <script>
+        // Attend que le contenu du DOM soit entièrement chargé avant d'exécuter le script
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            /**
+             * Classe principale pour gérer l'application Disc Dog Scorer.
+             */
+            class DiscDogScorer {
+                constructor() {
+                    // --- Propriétés de l'application ---
+                    this.version = '0.7.0'; // Version mise à jour
+                    this.currentView = 'measure'; // Vue actuellement affichée
+                    this.editingRunId = null; // ID du run en cours d'édition
+                    this.dogProfiles = []; // Liste des profils de chiens
+                    this.lastRunData = null; // Données du dernier run terminé
+                    this.modalConfirmCallback = null; // Fonction de rappel pour la modale de confirmation
+
+                    // --- Thèmes et couleurs ---
+                    this.colorThemes = [
+                        { name: 'blue', color: '#2196F3' }, { name: 'green', color: '#4CAF50' },
+                        { name: 'marron-cuir', color: '#8D6E63' }, { name: 'violet', color: '#673AB7' },
+                        { name: 'rose', color: '#E91E63' }, { name: 'turquoise', color: '#009688' },
+                        { name: 'ardoise', color: '#607D8B' }, { name: 'rouge', color: '#d32f2f' },
+                        { name: 'jaune', color: '#FBC02D' }, { name: 'cyan', color: '#00BCD4' },
+                        { name: 'citron-vert', color: '#CDDC39' }, { name: 'graphite', color: '#424242' }
+                    ];
+                    
+                    // --- État du run ---
+                    this.isRunning = false; // Le chronomètre est-il en marche ?
+                    this.isRunCompleted = false; // Le run est-il terminé ?
+                    this.isRunSaved = false; // Le run a-t-il été sauvegardé ?
+                    this.startTime = null; // Timestamp de début du run
+                    this.elapsedTime = 0; // Temps écoulé en ms
+                    this.timerInterval = null; // Référence de l'intervalle du chronomètre
+                    
+                    // --- Statistiques du run ---
+                    this.catches = 0;
+                    this.drops = 0;
+                    this.takes = 0;
+                    this.totalThrows = 0;
+                    this.timeline = []; // Séquence des actions (C, D, T)
+                    this.actionHistory = []; // Historique détaillé des actions pour l'annulation
+
+                    // --- Options chargées depuis le localStorage ---
+                    this.theme = localStorage.getItem('theme') || 'light';
+                    this.colorTheme = localStorage.getItem('colorTheme') || 'blue';
+                    this.seuilMinimum = parseInt(localStorage.getItem('seuilMinimum')) || 0;
+                    this.hapticEnabled = (localStorage.getItem('hapticEnabled') || 'true') === 'true';
+                    this.shareEnabled = (localStorage.getItem('shareEnabled') || 'true') === 'true';
+                    this.csvButtonsEnabled = (localStorage.getItem('csvButtonsEnabled') || 'true') === 'true';
+
+                    // --- Initialisation ---
+                    this.initializeApp();
+                    this.bindEvents();
+                    this.loadOptions();
+                }
+
+                /**
+                 * Initialise l'application : applique les thèmes, charge les données et affiche la vue par défaut.
+                 */
+                initializeApp() {
+                    document.body.setAttribute('data-theme', this.theme);
+                    document.body.setAttribute('data-color-theme', this.colorTheme);
+                    document.getElementById('versionDisplay').textContent = `Version ${this.version}`;
+                    this.displayColorThemes();
+                    this.loadDogProfiles();
+                    this.showView('measure');
+                    this.loadHistory();
+                    this.updateShareButtonVisibility();
+                    this.updateCsvButtonsVisibility();
+                }
+
+                /**
+                 * Lie tous les événements des éléments du DOM à leurs fonctions respectives.
+                 */
+                bindEvents() {
+                    // Navigation
+                    document.getElementById('homeNav').addEventListener('click', () => this.navigateTo('measure'));
+                    document.getElementById('historyNav').addEventListener('click', () => this.navigateTo('history'));
+                    document.getElementById('optionsNav').addEventListener('click', () => this.navigateTo('options'));
+                    
+                    // Actions de mesure
+                    document.getElementById('catchBtn').addEventListener('click', () => this.addAction('catch'));
+                    document.getElementById('dropBtn').addEventListener('click', () => this.addAction('drop'));
+                    document.getElementById('takeBtn').addEventListener('click', () => this.addAction('take'));
+                    document.getElementById('undoBtn').addEventListener('click', () => this.undoAction());
+                    document.getElementById('endRunBtn').addEventListener('click', () => this.endRun());
+                    
+                    // Actions sur les résultats
+                    document.getElementById('razBtn').addEventListener('click', () => this.confirmResetRun());
+                    document.getElementById('saveBtn').addEventListener('click', () => this.showSaveModal());
+                    document.getElementById('shareBtn').addEventListener('click', () => this.generateShareImage());
+
+                    // Actions des modales
+                    document.getElementById('closeShareBtn').addEventListener('click', () => this.hideShareModal());
+                    document.getElementById('cancelSaveBtn').addEventListener('click', () => this.hideSaveModal());
+                    document.getElementById('confirmSaveBtn').addEventListener('click', () => this.saveRun());
+                    document.getElementById('cancelUpdateBtn').addEventListener('click', () => this.hideEditModal());
+                    document.getElementById('confirmUpdateBtn').addEventListener('click', () => this.updateRun());
+                    document.getElementById('modalCancel').addEventListener('click', () => this.hideModal());
+                    document.getElementById('modalConfirm').addEventListener('click', () => this.confirmModal());
+
+                    // Formulaires et entrées
+                    document.getElementById('dogNameInput').addEventListener('input', (e) => this.handleDogNameInput(e));
+                    
+                    // Options
+                    document.getElementById('themeToggle').addEventListener('change', () => this.toggleTheme());
+                    document.getElementById('hapticToggle').addEventListener('change', () => this.toggleHaptic());
+                    document.getElementById('shareToggle').addEventListener('change', () => this.toggleShare());
+                    document.getElementById('csvToggle').addEventListener('change', () => this.toggleCsvButtons());
+                    document.getElementById('seuilInput').addEventListener('change', (e) => this.updateSeuil(e));
+                    document.getElementById('purgeBtn').addEventListener('click', () => this.purgeHistory());
+                    document.getElementById('addDogBtn').addEventListener('click', () => this.addDogProfile());
+                    
+                    // Historique
+                    document.getElementById('exportBtn').addEventListener('click', () => this.exportCSV());
+                    document.getElementById('importCsvInput').addEventListener('change', (e) => this.handleCsvImport(e));
+                    document.querySelectorAll('.sort-button').forEach(btn => btn.addEventListener('click', (e) => this.sortHistory(e.target.dataset.sort)));
+                }
+
+                // --- Méthodes de l'application ---
+
+                /**
+                 * Fait vibrer l'appareil si l'option est activée.
+                 * @param {number} pattern - La durée de la vibration en ms.
+                 */
+                vibrate(pattern = 50) {
+                    if (this.hapticEnabled && window.navigator.vibrate) {
+                        window.navigator.vibrate(pattern);
+                    }
+                }
+
+                /**
+                 * Affiche les pastilles de couleur pour la sélection du thème.
+                 */
+                displayColorThemes() {
+                    const container = document.getElementById('colorThemeSelector');
+                    container.innerHTML = '';
+                    this.colorThemes.forEach(theme => {
+                        const swatch = document.createElement('div');
+                        swatch.className = 'color-swatch';
+                        swatch.style.backgroundColor = theme.color;
+                        swatch.dataset.themeName = theme.name;
+                        swatch.title = theme.name.charAt(0).toUpperCase() + theme.name.slice(1);
+                        if (theme.name === this.colorTheme) {
+                            swatch.classList.add('active');
+                        }
+                        swatch.addEventListener('click', () => this.updateColorTheme(theme.name));
+                        container.appendChild(swatch);
+                    });
+                }
+                
+                /**
+                 * Met à jour le thème de couleur de l'application.
+                 * @param {string} themeName - Le nom du nouveau thème.
+                 */
+                updateColorTheme(themeName) {
+                    this.colorTheme = themeName;
+                    document.body.setAttribute('data-color-theme', this.colorTheme);
+                    localStorage.setItem('colorTheme', this.colorTheme);
+                    document.querySelectorAll('.color-swatch').forEach(swatch => {
+                        swatch.classList.toggle('active', swatch.dataset.themeName === themeName);
+                    });
+                }
+                
+                // --- Gestion des profils de chiens ---
+
+                loadDogProfiles() {
+                    const profiles = localStorage.getItem('discDogProfiles');
+                    if (profiles) {
+                        this.dogProfiles = JSON.parse(profiles);
+                    } else {
+                        // Rétrocompatibilité : crée des profils à partir de l'historique existant
+                        const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                        const uniqueNames = [...new Set(history.map(run => run.dogName))];
+                        this.dogProfiles = uniqueNames.map(name => ({ id: Date.now() + Math.random(), name }));
+                        this.saveDogProfiles();
+                    }
+                }
+
+                saveDogProfiles() {
+                    localStorage.setItem('discDogProfiles', JSON.stringify(this.dogProfiles));
+                }
+
+                displayDogProfiles() {
+                    const list = document.getElementById('dogProfilesList');
+                    if (this.dogProfiles.length === 0) {
+                        list.innerHTML = '<p style="text-align:center;color:#999;padding:10px 0;">Aucun profil.</p>';
+                        return;
+                    }
+                    list.innerHTML = '';
+                    this.dogProfiles.sort((a, b) => a.name.localeCompare(b.name)).forEach(dog => {
+                        const item = document.createElement('div');
+                        item.className = 'dog-profile-item';
+                        item.innerHTML = `
+                            <span class="dog-profile-name">${dog.name}</span>
+                            <div class="dog-profile-actions">
+                                <button class="history-action-btn rename-dog-btn" title="Renommer"><span class="material-icons">edit</span></button>
+                                <button class="history-action-btn delete-dog-btn" title="Supprimer"><span class="material-icons">delete</span></button>
+                            </div>`;
+                        item.querySelector('.rename-dog-btn').addEventListener('click', () => this.renameDogProfile(dog.id, dog.name));
+                        item.querySelector('.delete-dog-btn').addEventListener('click', () => this.confirmDeleteDogProfile(dog.id, dog.name));
+                        list.appendChild(item);
+                    });
+                }
+
+                addDogProfile(name = null) {
+                    const input = document.getElementById('newDogNameInput');
+                    const newName = (name || input.value).trim();
+                    if (newName && !this.dogProfiles.some(dog => dog.name.toLowerCase() === newName.toLowerCase())) {
+                        this.dogProfiles.push({ id: Date.now(), name: newName });
+                        this.saveDogProfiles();
+                        this.displayDogProfiles();
+                        if (input) input.value = '';
+                    }
+                }
+
+                confirmDeleteDogProfile(dogId, dogName) {
+                    const runsCount = JSON.parse(localStorage.getItem('discDogHistory') || '[]').filter(run => run.dogName.toLowerCase() === dogName.toLowerCase()).length;
+                    let message = `Vraiment supprimer "${dogName}" ?`;
+                    if (runsCount > 0) {
+                        message += ` ${runsCount} run(s) associé(s) ne seront PAS supprimés.`;
+                    }
+                    this.showModal(message, () => {
+                        this.dogProfiles = this.dogProfiles.filter(dog => dog.id !== dogId);
+                        this.saveDogProfiles();
+                        this.displayDogProfiles();
+                    });
+                }
+
+                renameDogProfile(dogId, oldName) {
+                    const newNamePrompt = prompt(`Renommer "${oldName}" :`, oldName);
+                    if (newNamePrompt && newNamePrompt.trim() && newNamePrompt.trim() !== oldName) {
+                        const newName = newNamePrompt.trim();
+                        const dog = this.dogProfiles.find(d => d.id === dogId);
+                        if (dog) dog.name = newName;
+
+                        // Mettre à jour l'historique
+                        const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                        history.forEach(run => { if (run.dogName === oldName) run.dogName = newName; });
+                        localStorage.setItem('discDogHistory', JSON.stringify(history));
+
+                        this.saveDogProfiles();
+                        this.displayDogProfiles();
+                        this.loadHistory(); // Recharger l'historique pour refléter les changements
+                    }
+                }
+                
+                // --- Navigation et gestion des vues ---
+
+                navigateTo(view) {
+                    if (this.needsConfirmation() && view !== this.currentView) {
+                        let message = this.isRunning ? 
+                            'Un run est en cours. Si vous quittez, il sera annulé.' : 
+                            'Le run n\'a pas été sauvegardé. Voulez-vous quitter sans sauvegarder ?';
+                        this.showModal(message, () => {
+                            this.resetRun(false);
+                            this.showView(view);
+                        });
+                        return;
+                    }
+                    this.showView(view);
+                }
+
+                needsConfirmation() {
+                    return this.isRunning || (this.isRunCompleted && !this.isRunSaved);
+                }
+
+                showView(viewId) {
+                    // Cache toutes les vues
+                    document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+                    // Désactive toutes les icônes de navigation
+                    document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
+
+                    // Affiche la vue demandée
+                    const targetView = document.getElementById(viewId + 'View');
+                    if (targetView) targetView.classList.add('active');
+
+                    // Active l'icône de navigation correspondante
+                    const navMap = { measure: 'homeNav', results: 'homeNav', history: 'historyNav', options: 'optionsNav' };
+                    const activeNav = document.getElementById(navMap[viewId] || 'homeNav');
+                    if (activeNav) activeNav.classList.add('active');
+                    
+                    this.currentView = viewId;
+                    if (viewId === 'history') this.loadHistory();
+                    if (viewId === 'options') this.displayDogProfiles();
+                }
+
+                // --- Logique du run ---
+
+                addAction(type) {
+                    this.vibrate();
+                    if (!this.isRunning && this.elapsedTime === 0) {
+                        this.startTimer();
+                    }
+
+                    this.actionHistory.push({ type: type, timestamp: Date.now() });
+
+                    switch (type) {
+                        case 'catch': this.catches++; this.timeline.push('C'); break;
+                        case 'drop': this.drops++; this.timeline.push('D'); break;
+                        case 'take': this.takes++; this.timeline.push('T'); break;
+                    }
+                    this.totalThrows++;
+                    this.updateDisplay();
+                    this.updateLiveTimeline();
+                }
+
+                undoAction() {
+                    this.vibrate();
+                    // Si le run est fini, l'annulation reprend le run
+                    if (!this.isRunning && this.isRunCompleted) {
+                        this.isRunCompleted = false;
+                        this.isRunSaved = false;
+                        this.startTimer();
+                        this.enableCountingButtons();
+                        document.getElementById('endRunBtn').textContent = 'Fin du Run';
+                        document.getElementById('undoBtn').textContent = 'UNDO';
+                        return;
+                    }
+
+                    if (this.actionHistory.length === 0) return;
+
+                    const lastAction = this.actionHistory.pop();
+                    switch (lastAction.type) {
+                        case 'catch': this.catches--; break;
+                        case 'drop': this.drops--; break;
+                        case 'take': this.takes--; break;
+                    }
+                    this.totalThrows--;
+                    this.timeline.pop();
+                    this.updateDisplay();
+                    this.updateLiveTimeline();
+                }
+                
+                startTimer() {
+                    this.isRunning = true;
+                    this.startTime = Date.now() - this.elapsedTime;
+                    document.getElementById('timer').classList.add('running');
+                    this.timerInterval = setInterval(() => {
+                        this.elapsedTime = Date.now() - this.startTime;
+                        this.updateTimer();
+                    }, 100);
+                }
+
+                stopTimer() {
+                    this.isRunning = false;
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+
+                updateTimer() {
+                    const totalSeconds = Math.floor(this.elapsedTime / 1000);
+                    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                    const seconds = String(totalSeconds % 60).padStart(2, '0');
+                    const timerEl = document.getElementById('timer');
+                    timerEl.textContent = `${minutes}:${seconds}`;
+
+                    timerEl.className = 'timer running'; // Reset classes
+                    if (totalSeconds <= 80) timerEl.classList.add('green');
+                    else if (totalSeconds <= 105) timerEl.classList.add('yellow');
+                    else if (totalSeconds <= 120) timerEl.classList.add('red');
+                    else timerEl.classList.add('critical');
+                }
+
+                endRun() {
+                    if (this.isRunCompleted) {
+                        this.showResults();
+                        return;
+                    }
+                    this.stopTimer();
+                    this.vibrate([50, 30, 50, 30, 50]);
+                    this.isRunCompleted = true;
+                    this.isRunSaved = false;
+                    this.disableCountingButtons();
+                    document.getElementById('timer').classList.remove('running');
+                    document.getElementById('endRunBtn').textContent = 'RESULTS';
+                    document.getElementById('undoBtn').textContent = 'Retour au Run';
+                }
+
+                enableCountingButtons() {
+                    ['catchBtn', 'dropBtn', 'takeBtn'].forEach(id => document.getElementById(id).disabled = false);
+                }
+                
+                disableCountingButtons() {
+                    ['catchBtn', 'dropBtn', 'takeBtn'].forEach(id => document.getElementById(id).disabled = true);
+                }
+                
+                showResults() {
+                    this.lastRunData = {
+                        dogName: 'Anonyme',
+                        date: new Date(),
+                        score: this.calculateScore(),
+                        totalThrows: this.totalThrows,
+                        catches: this.catches,
+                        drops: this.drops,
+                        takes: this.takes,
+                        timeline: [...this.timeline],
+                    };
+                    
+                    let scoreText = `Score : ${this.lastRunData.score.toFixed(1)} / ${this.totalThrows} lancés`;
+                    if(this.seuilMinimum > 0) {
+                        scoreText += ` (Seuil: ${this.seuilMinimum})`;
+                    }
+                    document.getElementById('scoreSummary').textContent = scoreText;
+
+                    document.getElementById('resultCatches').textContent = this.catches;
+                    document.getElementById('resultDrops').textContent = this.drops;
+                    document.getElementById('resultTakes').textContent = this.takes;
+
+                    const totalSeconds = Math.floor(this.elapsedTime / 1000);
+                    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                    const seconds = String(totalSeconds % 60).padStart(2, '0');
+                    document.getElementById('resultTime').textContent = `${minutes}:${seconds}`;
+                    
+                    this.displayTimelineForResults();
+                    this.updateShareButtonVisibility();
+                    this.showView('results');
+                }
+                
+                calculateScore() {
+                    const totalGood = this.catches + this.takes;
+                    const divisor = this.totalThrows < this.seuilMinimum ? this.seuilMinimum : this.totalThrows;
+                    return divisor === 0 ? 0 : (totalGood / divisor) * 10;
+                }
+
+                displayTimelineForResults() {
+                    const timelineContainer = document.getElementById('timeline');
+                    timelineContainer.innerHTML = '';
+                    this.timeline.forEach(item => {
+                        const span = document.createElement('span');
+                        span.className = 'timeline-item';
+                        span.textContent = item;
+                        span.classList.add({
+                            'C': 'timeline-catch',
+                            'D': 'timeline-drop',
+                            'T': 'timeline-take'
+                        }[item]);
+                        timelineContainer.appendChild(span);
+                    });
+                }
+                
+                confirmResetRun() {
+                    this.showModal('Vraiment réinitialiser ce run ?', () => this.resetRun(true));
+                }
+                
+                resetRun(navigateToMeasure = true) {
+                    this.stopTimer();
+                    Object.assign(this, {
+                        catches: 0, drops: 0, takes: 0, totalThrows: 0,
+                        timeline: [], actionHistory: [], elapsedTime: 0,
+                        isRunning: false, isRunCompleted: false, isRunSaved: false,
+                        lastRunData: null
+                    });
+                    this.enableCountingButtons();
+                    document.getElementById('endRunBtn').textContent = 'Fin du Run';
+                    document.getElementById('undoBtn').textContent = 'UNDO';
+                    document.getElementById('timer').textContent = '00:00';
+                    document.getElementById('timer').className = 'timer';
+                    this.updateDisplay();
+                    this.updateLiveTimeline();
+                    if (navigateToMeasure) {
+                        this.showView('measure');
+                    }
+                }
+
+                // --- Mise à jour de l'UI ---
+
+                updateDisplay() {
+                    document.getElementById('totalThrows').textContent = this.totalThrows;
+                }
+
+                updateLiveTimeline() {
+                    const timelineContainer = document.getElementById('liveTimeline');
+                    if (this.timeline.length === 0) {
+                        timelineContainer.innerHTML = '<span style="color:#999;font-style:italic;">Aucun lancer...</span>';
+                        return;
+                    }
+                    timelineContainer.innerHTML = '';
+                    this.timeline.forEach(item => {
+                        const span = document.createElement('span');
+                        span.className = 'live-timeline-item';
+                        span.textContent = item;
+                        span.classList.add({
+                            'C': 'live-timeline-catch',
+                            'D': 'live-timeline-drop',
+                            'T': 'live-timeline-take'
+                        }[item]);
+                        timelineContainer.appendChild(span);
+                    });
+                }
+                
+                // --- Modales (Sauvegarde, Édition, Confirmation) ---
+
+                showSaveModal() {
+                    document.getElementById('saveModal').style.display = 'block';
+                    document.getElementById('dogNameInput').focus();
+                }
+
+                hideSaveModal() {
+                    document.getElementById('saveModal').style.display = 'none';
+                }
+
+                showEditModal(runId) {
+                    const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    const run = history.find(r => r.id === runId);
+                    if (run) {
+                        this.editingRunId = runId;
+                        document.getElementById('editDogNameInput').value = run.dogName;
+                        document.getElementById('editNotesInput').value = run.notes;
+                        document.getElementById('editModal').style.display = 'block';
+                    }
+                }
+
+                hideEditModal() {
+                    document.getElementById('editModal').style.display = 'none';
+                    this.editingRunId = null;
+                }
+
+                handleDogNameInput(e) {
+                    const query = e.target.value;
+                    if (query.length >= 2) {
+                        this.showSuggestions(this.findDogNameSuggestions(query));
+                    } else {
+                        document.getElementById('suggestions').style.display = 'none';
+                    }
+                    this.updateTagPreview(query);
+                }
+
+                findDogNameSuggestions(query) {
+                    return this.dogProfiles.filter(profile => profile.name.toLowerCase().includes(query.toLowerCase()));
+                }
+
+                showSuggestions(suggestions) {
+                    const suggestionsBox = document.getElementById('suggestions');
+                    suggestionsBox.innerHTML = '';
+                    suggestions.forEach(profile => {
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        item.textContent = profile.name;
+                        item.addEventListener('click', () => {
+                            document.getElementById('dogNameInput').value = profile.name;
+                            suggestionsBox.style.display = 'none';
+                            this.updateTagPreview(profile.name);
+                        });
+                        suggestionsBox.appendChild(item);
+                    });
+                    suggestionsBox.style.display = suggestions.length > 0 ? 'block' : 'none';
+                }
+                
+                updateTagPreview(name) {
+                    const previewEl = document.getElementById('tagPreview');
+                    if (name.trim()) {
+                        previewEl.textContent = `Sera sauvegardé comme : #Run${this.getNextRunNumber(name)}`;
+                    } else {
+                        previewEl.textContent = '';
+                    }
+                }
+
+                getNextRunNumber(dogName) {
+                    const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    return history.filter(run => run.dogName.toLowerCase() === dogName.toLowerCase()).length + 1;
+                }
+
+                // --- CRUD pour l'historique ---
+
+                saveRun() {
+                    const dogName = document.getElementById('dogNameInput').value.trim();
+                    if (!dogName) {
+                        alert('Veuillez entrer le nom du chien');
+                        return;
+                    }
+                    // Ajoute un profil si c'est un nouveau chien
+                    if (!this.dogProfiles.some(profile => profile.name.toLowerCase() === dogName.toLowerCase())) {
+                        this.addDogProfile(dogName);
+                    }
+
+                    if (this.lastRunData) {
+                        this.lastRunData.dogName = dogName;
+                    }
+                    
+                    const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    const newRun = {
+                        id: Date.now(),
+                        dogName: dogName,
+                        runTag: `#Run${this.getNextRunNumber(dogName)}`,
+                        date: (new Date()).toLocaleDateString('fr-FR'),
+                        time: (new Date()).toLocaleTimeString('fr-FR'),
+                        score: this.calculateScore(),
+                        totalThrows: this.totalThrows,
+                        catches: this.catches,
+                        drops: this.drops,
+                        takes: this.takes,
+                        timelineSequence: this.timeline.join(''),
+                        notes: document.getElementById('notesInput').value.trim(),
+                        elapsedTime: this.elapsedTime,
+                        seuilMinimum: this.seuilMinimum,
+                    };
+                    history.push(newRun);
+                    localStorage.setItem('discDogHistory', JSON.stringify(history));
+                    this.isRunSaved = true;
+                    this.hideSaveModal();
+                    this.resetRun();
+                }
+
+                updateRun() {
+                    const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    const runIndex = history.findIndex(run => run.id === this.editingRunId);
+                    if (runIndex !== -1) {
+                        history[runIndex].dogName = document.getElementById('editDogNameInput').value.trim();
+                        history[runIndex].notes = document.getElementById('editNotesInput').value.trim();
+                        localStorage.setItem('discDogHistory', JSON.stringify(history));
+                        this.hideEditModal();
+                        this.loadHistory();
+                    }
+                }
+
+                confirmDeleteRun(runId) {
+                    this.showModal('Vraiment supprimer ce run ?', () => this.deleteRun(runId));
+                }
+
+                deleteRun(runId) {
+                    let history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    let updatedHistory = history.filter(run => run.id !== runId);
+                    localStorage.setItem('discDogHistory', JSON.stringify(updatedHistory));
+                    this.loadHistory();
+                }
+                
+                loadHistory() {
+                    const activeSort = document.querySelector('.sort-button.active')?.dataset.sort || 'date';
+                    this.sortHistory(activeSort);
+                }
+
+                displayHistory(runs) {
+                    const list = document.getElementById('historyList');
+                     if (runs.length === 0) {
+                        list.innerHTML = '<p style="text-align:center;color:#999;">Aucun run sauvegardé</p>';
+                        return;
+                    }
+                    list.innerHTML = '';
+                    runs.forEach(run => {
+                        const item = document.createElement('div');
+                        item.className = 'history-item';
+                        const totalSeconds = Math.floor((run.elapsedTime || 0) / 1000);
+                        const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                        const seconds = String(totalSeconds % 60).padStart(2, '0');
+
+                        item.innerHTML = `
+                            <div class="history-header">
+                                <div class="history-header-info">
+                                    <span class="dog-name">${run.dogName}</span> <span class="run-tag">${run.runTag}</span>
+                                </div>
+                                <div class="history-item-actions">
+                                    <button class="history-action-btn edit-btn" title="Modifier"><span class="material-icons">edit</span></button>
+                                    <button class="history-action-btn delete-btn" title="Supprimer"><span class="material-icons">delete</span></button>
+                                </div>
+                            </div>
+                            <div class="history-details">
+                                <div><strong>Date:</strong> ${run.date}</div>
+                                <div><strong>Heure:</strong> ${run.time}</div>
+                                <div><strong>Temps:</strong> ${minutes}:${seconds}</div>
+                                <div><strong>Score:</strong> <span class="history-score">${run.score.toFixed(1)}</span></div>
+                                <div><strong>Lancés:</strong> ${run.totalThrows}${run.totalThrows < run.seuilMinimum ? ` (S${run.seuilMinimum})` : ''}</div>
+                                <div><strong>Catches:</strong> ${run.catches}</div>
+                                <div><strong>Drops:</strong> ${run.drops}</div>
+                                <div><strong>Takes:</strong> ${run.takes}</div>
+                            </div>
+                            ${run.notes ? `<div style="margin-top:10px;font-style:italic;white-space:pre-wrap;">${run.notes}</div>` : ''}
+                        `;
+                        item.querySelector('.edit-btn').addEventListener('click', (e) => {
+                            e.stopPropagation(); this.showEditModal(run.id);
+                        });
+                        item.querySelector('.delete-btn').addEventListener('click', (e) => {
+                            e.stopPropagation(); this.confirmDeleteRun(run.id);
+                        });
+                        list.appendChild(item);
+                    });
+                }
+                
+                sortHistory(sortBy, data = null) {
+                    const runs = data || JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    document.querySelectorAll('.sort-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`.sort-button[data-sort="${sortBy}"]`)?.classList.add('active');
+
+                    const sortFunctions = {
+                        'name': (a, b) => a.dogName.localeCompare(b.dogName),
+                        'score': (a, b) => b.score - a.score,
+                        'date': (a, b) => b.id - a.id // Tri par défaut sur l'ID (chronologique)
+                    };
+
+                    runs.sort(sortFunctions[sortBy] || sortFunctions['date']);
+                    this.displayHistory(runs);
+                }
+
+                // --- Import / Export CSV ---
+
+                handleCsvImport(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const text = e.target.result;
+                        const rows = text.split(/\r\n|\n/);
+                        const headers = rows[0].split(';').map(h => h.trim());
+
+                        const requiredHeaders = ['NomChien', 'Catches', 'Drops', 'Takes', 'TotalLances'];
+                        if (!requiredHeaders.every(h => headers.includes(h))) {
+                            this.showImportStatus("Fichier CSV invalide. En-têtes requis: NomChien, Catches, Drops, Takes, TotalLances", 'error');
+                            return;
+                        }
+
+                        const importedRuns = [];
+                        let successCount = 0;
+                        let errorCount = 0;
+
+                        for (let i = 1; i < rows.length; i++) {
+                            if (!rows[i]) continue;
+                            const data = rows[i].split(';');
+                            if (data.length !== headers.length) {
+                                errorCount++;
+                                continue;
+                            }
+                            
+                            const runData = {};
+                            headers.forEach((header, index) => {
+                                runData[header] = data[index] ? data[index].trim() : '';
+                            });
+
+                            const durationParts = (runData.Duree || "00:00").split(':');
+                            
+                            const run = {
+                                id: (new Date(runData.Date.split('/').reverse().join('-') + 'T' + runData.Heure).getTime() || Date.now()) + Math.random(),
+                                dogName: runData.NomChien,
+                                runTag: runData.TagRun || '',
+                                date: runData.Date,
+                                time: runData.Heure,
+                                score: parseFloat(runData.Score.replace(',', '.')) || 0,
+                                totalThrows: parseInt(runData.TotalLances, 10) || 0,
+                                catches: parseInt(runData.Catches, 10) || 0,
+                                drops: parseInt(runData.Drops, 10) || 0,
+                                takes: parseInt(runData.Takes, 10) || 0,
+                                timelineSequence: runData.Timeline || '',
+                                notes: (runData.Remarque || '').slice(1, -1).replace(/""/g, '"'), // Gère les guillemets
+                                elapsedTime: ((parseInt(durationParts[0], 10) * 60) + parseInt(durationParts[1], 10)) * 1000 || 0,
+                                seuilMinimum: parseInt(runData.Seuil, 10) || 0,
+                            };
+                            
+                            if (run.dogName && !this.dogProfiles.some(d => d.name.toLowerCase() === run.dogName.toLowerCase())) {
+                                this.addDogProfile(run.dogName);
+                            }
+                            
+                            importedRuns.push(run);
+                            successCount++;
+                        }
+
+                        if (successCount > 0) {
+                            const currentHistory = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                            localStorage.setItem('discDogHistory', JSON.stringify([...currentHistory, ...importedRuns]));
+                            this.loadHistory();
+                        }
+
+                        this.showImportStatus(`${successCount} run(s) importé(s). ${errorCount > 0 ? `${errorCount} erreur(s).` : ''}`, 'success');
+                    };
+                    reader.readAsText(file, 'UTF-8');
+                    event.target.value = ''; // Permet de réimporter le même fichier
+                }
+                
+                showImportStatus(message, type) {
+                    const statusEl = document.getElementById('importStatus');
+                    statusEl.textContent = message;
+                    statusEl.style.color = type === 'error' ? '#F44336' : '#4CAF50';
+                    setTimeout(() => statusEl.textContent = '', 5000);
+                }
+
+                exportCSV() {
+                    const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    if (history.length === 0) {
+                        alert('Aucune donnée à exporter');
+                        return;
+                    }
+                    const headers = "NomChien;TagRun;Date;Heure;Duree;Score;TotalLances;Seuil;Timeline;TotalAttrapes;Catches;Drops;Takes;Remarque\n";
+                    const csvContent = headers + history.map(run => {
+                        const totalSeconds = Math.floor((run.elapsedTime || 0) / 1000);
+                        const duration = `${String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;
+                        return [
+                            run.dogName, run.runTag, run.date, run.time,
+                            duration, run.score.toFixed(1).replace('.',','),
+                            run.totalThrows, run.seuilMinimum || 0,
+                            run.timelineSequence, run.catches + run.takes,
+                            run.catches, run.drops, run.takes,
+                            `"${(run.notes || '').replace(/"/g, '""')}"`
+                        ].join(';');
+                    }).join('\n');
+                    
+                    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' }); // BOM pour Excel
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `disc_dog_history_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                // --- Partage ---
+
+                showShareModal() { document.getElementById('shareModal').style.display = 'block'; }
+                hideShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+                
+                generateShareImage() {
+                    const runData = this.lastRunData;
+                    if (!runData) return;
+
+                    this.showShareModal();
+                    const imageContainer = document.getElementById('shareImageContainer');
+                    imageContainer.innerHTML = '<div class="loader"></div>';
+                    
+                    // Remplir le template de la carte de partage
+                    document.getElementById('shareDogName').textContent = runData.dogName || 'N/A';
+                    document.getElementById('shareDate').textContent = runData.date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    document.getElementById('shareScore').textContent = runData.score.toFixed(1);
+                    document.getElementById('shareCatches').textContent = runData.catches;
+                    document.getElementById('shareDrops').textContent = runData.drops;
+                    document.getElementById('shareTakes').textContent = runData.takes;
+                    document.getElementById('shareTotal').textContent = runData.totalThrows;
+                    
+                    const timelineContainer = document.getElementById('shareTimeline');
+                    timelineContainer.innerHTML = '';
+                    runData.timeline.forEach(item => {
+                        const span = document.createElement('span');
+                        span.className = 'timeline-item';
+                        span.textContent = item;
+                        const classMap = { 'C': 'timeline-catch', 'D': 'timeline-drop', 'T': 'timeline-take' };
+                        span.classList.add(classMap[item]);
+                        timelineContainer.appendChild(span);
+                    });
+
+                    // Utiliser html2canvas pour générer l'image
+                    const card = document.getElementById('shareCard');
+                    setTimeout(() => { // Donner un peu de temps au DOM pour se mettre à jour
+                        html2canvas(card, {
+                            backgroundColor: getComputedStyle(document.body).getPropertyValue('--app-bg'),
+                            useCORS: true,
+                            scale: 2 // Améliore la résolution
+                        }).then(canvas => {
+                            const imageUrl = canvas.toDataURL('image/png');
+                            imageContainer.innerHTML = `<img src="${imageUrl}" alt="Résumé du run">`;
+                            document.getElementById('downloadShareBtn').href = imageUrl;
+                        }).catch(err => {
+                            console.error("oops, something went wrong!", err);
+                            imageContainer.textContent = "Erreur lors de la génération de l'image.";
+                        });
+                    }, 500);
+                }
+                
+                // --- Options ---
+                
+                loadOptions() {
+                    document.getElementById('themeToggle').checked = this.theme === 'dark';
+                    document.getElementById('themeLabel').textContent = this.theme === 'dark' ? 'Sombre' : 'Clair';
+                    document.getElementById('hapticToggle').checked = this.hapticEnabled;
+                    document.getElementById('hapticLabel').textContent = this.hapticEnabled ? 'Activé' : 'Désactivé';
+                    document.getElementById('shareToggle').checked = this.shareEnabled;
+                    document.getElementById('shareLabel').textContent = this.shareEnabled ? 'Activé' : 'Désactivé';
+                    document.getElementById('csvToggle').checked = this.csvButtonsEnabled;
+                    document.getElementById('csvLabel').textContent = this.csvButtonsEnabled ? 'Activé' : 'Désactivé';
+                    document.getElementById('seuilInput').value = this.seuilMinimum;
+                    this.updateColorTheme(this.colorTheme);
+                }
+
+                toggleTheme() {
+                    this.theme = this.theme === 'light' ? 'dark' : 'light';
+                    document.body.setAttribute('data-theme', this.theme);
+                    localStorage.setItem('theme', this.theme);
+                    document.getElementById('themeLabel').textContent = this.theme === 'dark' ? 'Sombre' : 'Clair';
+                }
+
+                toggleHaptic() {
+                    this.hapticEnabled = !this.hapticEnabled;
+                    localStorage.setItem('hapticEnabled', String(this.hapticEnabled));
+                    document.getElementById('hapticLabel').textContent = this.hapticEnabled ? 'Activé' : 'Désactivé';
+                }
+                
+                toggleShare() {
+                    this.shareEnabled = !this.shareEnabled;
+                    localStorage.setItem('shareEnabled', String(this.shareEnabled));
+                    document.getElementById('shareLabel').textContent = this.shareEnabled ? 'Activé' : 'Désactivé';
+                    this.updateShareButtonVisibility();
+                }
+
+                updateShareButtonVisibility() {
+                    const shareBtn = document.getElementById('shareBtn');
+                    if (shareBtn) {
+                        shareBtn.style.display = this.shareEnabled ? 'flex' : 'none';
+                    }
+                }
+                
+                toggleCsvButtons() {
+                    this.csvButtonsEnabled = !this.csvButtonsEnabled;
+                    localStorage.setItem('csvButtonsEnabled', String(this.csvButtonsEnabled));
+                    document.getElementById('csvLabel').textContent = this.csvButtonsEnabled ? 'Activé' : 'Désactivé';
+                    this.updateCsvButtonsVisibility();
+                }
+
+                updateCsvButtonsVisibility() {
+                    const importBtnLabel = document.querySelector('label[for="importCsvInput"]');
+                    const exportBtn = document.getElementById('exportBtn');
+                    if (importBtnLabel && exportBtn) {
+                        const displayStyle = this.csvButtonsEnabled ? '' : 'none'; // Rétablit l'affichage par défaut ou cache
+                        importBtnLabel.style.display = displayStyle;
+                        exportBtn.style.display = displayStyle;
+                    }
+                }
+
+                updateSeuil(e) {
+                    this.seuilMinimum = parseInt(e.target.value, 10) || 0;
+                    localStorage.setItem('seuilMinimum', String(this.seuilMinimum));
+                }
+
+                purgeHistory() {
+                    this.showModal('Vraiment supprimer tout l\'historique ?', () => {
+                        localStorage.removeItem('discDogHistory');
+                        this.loadHistory();
+                    });
+                }
+                
+                // --- Méthodes utilitaires pour les modales ---
+
+                showModal(message, callback) {
+                    document.getElementById('modalMessage').textContent = message;
+                    document.getElementById('confirmModal').style.display = 'block';
+                    this.modalConfirmCallback = callback;
+                }
+
+                hideModal() {
+                    document.getElementById('confirmModal').style.display = 'none';
+                    this.modalConfirmCallback = null;
+                }
+
+                confirmModal() {
+                    if (this.modalConfirmCallback) {
+                        this.modalConfirmCallback();
+                    }
+                    this.hideModal();
+                }
+            }
+
+            // Instancie la classe principale pour démarrer l'application
+            new DiscDogScorer();
+        });
+    </script>
+</body>
+</html>
