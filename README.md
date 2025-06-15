@@ -1,1 +1,44 @@
-Catch Ratio ToolBox - v1.3.0डिस्क्रिप्शनCatch Ratio ToolBox est une application web conçue pour les passionnés de Disc Dog. Elle permet de chronométrer, suivre et analyser les performances lors des sessions d'entraînement. L'application enregistre chaque lancer (attrapé, tombé, prise directe) et fournit des statistiques détaillées pour aider les utilisateurs à suivre leur progression et celle de leurs chiens.Toutes les données sont sauvegardées localement dans le navigateur, garantissant ainsi confidentialité et accès hors ligne.FonctionnalitésChronomètre Intégré : Lancez et arrêtez un chronomètre pour mesurer la durée de vos sessions d'entraînement.Suivi des Lancers : Enregistrez facilement les Catches, Drops, Takes et Fautes d'un simple clic.Timeline en Direct : Visualisez la séquence de vos lancers en temps réel.Historique des Sessions : Conservez un historique complet de toutes vos sessions, classées par chien et par date.Statistiques Détaillées :Calcul du Catch Ratio pour chaque session.Statistiques avancées (optionnel) incluant le ratio de début/fin, la meilleure série de catches et la consistance.Gestion de Profils : Créez et gérez des profils pour plusieurs chiens.Personnalisation Poussée :Thème sombre ou clair.Plus de 15 thèmes de couleur pour adapter l'interface.Activation/Désactivation de fonctionnalités (bouton "Faute", statistiques avancées, etc.).Partage des Résultats : Générez une image de vos résultats à la fin de chaque session pour la partager facilement.Sauvegarde et Restauration : Exportez l'intégralité de vos données (historique, profils, options) dans un fichier JSON et restaurez-les à tout moment.Comment l'utiliser ?Aucune installation n'est requise. Il vous suffit de :Télécharger le fichier backup_1.3.0.html.L'ouvrir dans n'importe quel navigateur web moderne (Chrome, Firefox, Safari, Edge).L'application est entièrement contenue dans ce seul fichier et peut être utilisée hors ligne.Technologies UtiliséesHTML5CSS3 : Utilisation de variables CSS pour une thématisation dynamique et un design responsive (Flexbox, Grid).JavaScript (Vanilla) : L'ensemble de la logique de l'application est géré en JavaScript natif, sans dépendre de frameworks externes.Librairie html2canvas : Pour la fonctionnalité de génération d'image pour le partage.ContribuerLes contributions sont les bienvenues ! Si vous souhaitez améliorer l'application, n'hésitez pas à :Forker le projet.Créer une nouvelle branche (git checkout -b feature/NouvelleFonctionnalite).Commit vos changements (git commit -m 'Ajout de NouvelleFonctionnalite').Push vers la branche (git push origin feature/NouvelleFonctionnalite).Ouvrir une Pull Request.LicenceCe projet est distribué sous la licence MIT. Voir le fichier LICENSE pour plus de détails.
+atch Ratio ToolBox v1.3.0
+Catch Ratio ToolBox est un outil web pour les passionnés de Disc Dog qui permet de suivre et analyser les performances d'entraînement.
+
+Fonctionnalités Principales
+⏱️ Chronomètre pour mesurer la durée de vos sessions.
+
+📊 Suivi des lancers (Catches, Drops, Takes, Fautes).
+
+📜 Historique complet de toutes vos sessions.
+
+🎨 Personnalisation avec plusieurs thèmes de couleurs et un mode sombre.
+
+🐶 Gestion de profils pour plusieurs chiens.
+
+🖼️ Partage des résultats sous forme d'image.
+
+💾 Sauvegarde et restauration de vos données.
+
+Comment l'utiliser ?
+Téléchargez le fichier index.html.
+
+Ouvrez-le dans votre navigateur web.
+
+C'est tout ! 
+
+Note Importante
+L'application utilise le localStorage de votre navigateur pour sauvegarder toutes les données (sessions, profils, options). Cela signifie que si vous effacez les données de votre navigateur, vous perdrez toutes vos informations.
+
+Il est fortement conseillé d'utiliser régulièrement la fonction de Backup (JSON) disponible dans les options pour créer une sauvegarde de vos données sur votre ordinateur.
+
+Technologies
+HTML5
+
+CSS3
+
+JavaScript (ES6+)
+
+LocalStorage
+
+Contribuer
+Les contributions sont les bienvenues ! N'hésitez pas à forker le projet et à proposer des améliorations.
+
+Licence
+Distribué sous la licence MIT.
