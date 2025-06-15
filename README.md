@@ -1,8 +1,7 @@
-atch Ratio ToolBox v1.3.0
-Catch Ratio ToolBox est un outil web pour les passionnés de Disc Dog qui permet de suivre et analyser les performances d'entraînement.
+Catch Ratio ToolBox est un outil web pour les passionnés de Disc Dog qui permet de suivre et analyser les performances d'un run freestyle.
 
 Fonctionnalités Principales
-⏱️ Chronomètre pour mesurer la durée de vos sessions.
+⏱️ Chronomètre pour mesurer la durée.
 
 📊 Suivi des lancers (Catches, Drops, Takes, Fautes).
 
