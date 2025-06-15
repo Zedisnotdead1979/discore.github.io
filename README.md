@@ -1,5 +1,8 @@
 Catch Ratio ToolBox est un outil web pour les passionnés de Disc Dog qui permet de suivre et analyser les performances d'un run freestyle.
 
+![image](https://github.com/user-attachments/assets/e63fd174-c5f7-4880-a402-c816762289aa)
+
+
 Fonctionnalités Principales
 ⏱️ Chronomètre pour mesurer la durée.
 
