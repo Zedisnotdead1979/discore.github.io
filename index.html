@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catch Ratio ToolBox</title>
-    <!-- Import de la nouvelle police : Inter -->
+    <!-- Liens vers les polices Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Lien vers la police d'icônes de Google -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Librairie pour la génération d'image -->
+    <!-- Bibliothèque externe pour la capture d'écran -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <style>
         /* Réinitialisation de base et configuration de la boîte de modèle */
         * {
@@ -477,7 +475,7 @@
         .history-header-info { flex: 1; }
         .dog-name { font-weight: var(--font-weight-bold); font-size: 1.1em; color: var(--text-primary); }
         .run-tag { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: var(--font-weight-semibold); }
-        .history-item-actions { display: flex; gap: 10px; }
+        .history-item-actions { display: flex; gap: 10px; flex-shrink: 0; }
         .history-action-btn { background: none; border: none; cursor: pointer; padding: 5px; color: var(--history-action-color); border-radius: 50%; z-index: 2; transition: all 0.2s ease; }
         .history-action-btn:hover { background-color: rgba(0,0,0,0.1); }
         .history-action-btn:active { transform: scale(0.9); }
@@ -544,12 +542,31 @@
         .sub-option:not(:last-child) {
             border-bottom: 1px solid var(--border-color);
         }
+        /* Style pour le groupe de commutateurs */
+        .option-toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .rule-mode-label {
+            font-weight: var(--font-weight-semibold);
+            width: 90px;
+            text-align: right;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
         .toggle-switch { position: relative; display: inline-block; width: 60px; height: 34px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--header-bg); }
         input:checked + .slider:before { transform: translateX(26px); }
+
+        #fullscreenBtn .material-icons {
+            font-size: 2em; /* Double the icon size */
+            vertical-align: middle; /* Align icon nicely */
+        }
+
         .danger-button { background-color: #F44336; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: var(--font-weight-bold); width: 100%; transition: all 0.2s ease, transform 0.1s ease; }
         .danger-button:hover { background-color: #da190b; }
         .danger-button:active { transform: scale(0.97); }
@@ -589,6 +606,69 @@
             background-color: var(--header-bg);
             color: var(--header-text);
         }
+
+        /* --- Sélecteur de langue personnalisé avec drapeaux --- */
+        .custom-select {
+            position: relative;
+            font-family: var(--font-family-base);
+        }
+
+        .select-selected {
+            background-color: var(--button-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            font-size: 1.8em; /* Agrandir les drapeaux */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 65px;
+            height: 45px;
+        }
+
+        .select-selected::after {
+            position: absolute;
+            content: "▾";
+            font-size: 0.6em;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .select-items {
+            position: absolute;
+            background-color: var(--app-bg);
+            bottom: calc(100% + 5px); /* Position au-dessus */
+            left: 0;
+            right: 0;
+            z-index: 99;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .select-hide {
+            display: none;
+        }
+
+        .select-items div {
+            color: var(--text-primary);
+            padding: 8px 12px;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            font-size: 1.8em;
+            transition: background-color 0.2s ease;
+        }
+
+        .select-items div:hover {
+            background-color: color-mix(in srgb, var(--button-bg) 90%, var(--text-primary));
+        }
+
 
         /* --- Modales --- */
         .modal {
@@ -714,8 +794,6 @@
             line-height: 16px; /* Adjust for border */
         }
 
-        .share-footer { background-color: var(--button-bg); padding: 5px; text-align: center; font-size: 0.7em; opacity: 0.6; color: var(--text-secondary); }
-
         .share-advanced-stats {
             margin-top: 15px;
             padding-top: 10px;
@@ -781,44 +859,69 @@
             .history-controls { flex-direction: column; }
             .sort-button, .export-button, .import-button { width: 100%; }
         }
+
+        /* Cacher l'option plein écran sur les appareils non-mobiles */
+        @media (min-width: 481px) {
+            #fullscreenOption {
+                display: none;
+            }
+        }
+
+        /* Styles pour le mode plein écran actif */
+        body.fullscreen-active .app-container {
+            min-height: 770px;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0;
+            border-radius: 0;
+            border: none;
+        }
     </style>
 </head>
 <body>
     <!-- Conteneur principal de l'application -->
     <div class="app-container">
-        <!-- En-tête de l'application avec la navigation -->
+        <!-- En-tête de l'application -->
         <div class="header">
             <div class="nav-icon" id="optionsNav"><span class="material-icons">menu</span></div>
             <div class="nav-icon active" id="homeNav"><span class="material-icons">home</span></div>
             <div class="nav-icon" id="historyNav"><span class="material-icons">history</span></div>
         </div>
-
         <!-- Contenu principal qui change en fonction de la vue -->
         <div class="content">
-            <!-- Vue de mesure (active par défaut) -->
+            <!-- Vue de Mesure -->
             <div class="view active" id="measureView">
                 <div class="timer-container"><div class="timer" id="timer">00:00</div></div>
-                <div class="stats-display"><div class="main-stat-block"><div class="main-stat-line"><div class="total-label">Total Lancés :</div><div class="total-throws" id="totalThrows">0</div></div><div class="live-timeline" id="liveTimeline"><span style="color: #999; font-style: italic;">Aucun lancer pour le moment</span></div></div></div>
-                <div class="counting-buttons">
-                    <div class="main-count-row">
-                        <button class="main-count-button catch-btn" id="catchBtn">CATCH</button>
-                        <button class="main-count-button drop-btn" id="dropBtn">DROP</button>
-                    </div>
-                    <div class="secondary-count-row">
-                        <button class="take-button" id="takeBtn">TAKE</button>
-                        <button class="fault-button" id="faultBtn">Faute</button>
+                <div class="stats-display">
+                    <div class="main-stat-block">
+                        <div class="main-stat-line">
+                            <div class="total-label" data-i18n-key="measure.total_throws_label"></div>
+                            <div class="total-throws" id="totalThrows">0</div>
+                        </div>
+                        <div class="live-timeline" id="liveTimeline"><span style="color: #999; font-style: italic;" data-i18n-key="measure.no_throws"></span></div>
                     </div>
                 </div>
-                <div class="action-buttons"><button class="action-button" id="undoBtn">UNDO</button><button class="action-button" id="endRunBtn">Fin du Run</button></div>
+                <div class="counting-buttons">
+                    <div class="main-count-row">
+                        <button class="main-count-button catch-btn" id="catchBtn" data-i18n-key="measure.button_catch"></button>
+                        <button class="main-count-button drop-btn" id="dropBtn" data-i18n-key="measure.button_drop"></button>
+                    </div>
+                    <div class="secondary-count-row">
+                        <button class="take-button" id="takeBtn" data-i18n-key="measure.button_take"></button>
+                        <button class="fault-button" id="faultBtn" data-i18n-key="measure.button_fault"></button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-button" id="undoBtn" data-i18n-key="measure.button_undo"></button>
+                    <button class="action-button" id="endRunBtn" data-i18n-key="measure.button_end_run"></button>
+                </div>
             </div>
-
-            <!-- Vue des résultats -->
+            <!-- Vue des Résultats -->
             <div class="view" id="resultsView">
                 <div class="results-section">
-                    <div class="results-title">Résultats du Run</div>
+                    <div class="results-title" data-i18n-key="results.title"></div>
                     <p class="score-summary" id="scoreSummary"></p>
                     <div class="timeline" id="timeline"></div>
-                    <!-- NOUVELLE DISPOSITION COMPACTE DES RÉSULTATS -->
                     <div class="compact-results-container">
                         <div class="compact-stats-row">
                             <span class="compact-stat" id="compactCatches"></span>
@@ -830,153 +933,237 @@
                         <div class="compact-time-row">
                             <span class="material-icons compact-time-icon">timer</span>
                             <span class="compact-time-value" id="compactTime">00:00</span>
-                            <span class="compact-time-label">Temps Final</span>
+                            <span class="compact-time-label" data-i18n-key="results.final_time_label"></span>
                         </div>
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button class="action-button" id="razBtn">RAZ</button>
-                    <button class="action-button" id="saveBtn">SAVE</button>
+                    <button class="action-button" id="razBtn" data-i18n-key="results.button_reset"></button>
+                    <button class="action-button" id="saveBtn" data-i18n-key="results.button_save"></button>
                 </div>
             </div>
-
-            <!-- Vue de l'historique -->
+            <!-- Vue de l'Historique -->
             <div class="view" id="historyView">
                 <div class="history-controls">
                     <div class="search-container">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par chien ou note...">
+                        <input type="text" id="searchInput" class="search-input" data-i18n-placeholder="history.search_placeholder">
                     </div>
-                    <button class="sort-button active" data-sort="date">Date/Heure</button>
-                    <button class="sort-button" data-sort="name">Nom (A-Z)</button>
-                    <button class="sort-button" data-sort="score">Score</button>
-                    <label for="importCsvInput" class="import-button">Importer Runs CSV</label>
+                    <button class="sort-button active" data-sort="date" data-i18n-key="history.sort_date"></button>
+                    <button class="sort-button" data-sort="name" data-i18n-key="history.sort_name"></button>
+                    <button class="sort-button" data-sort="score" data-i18n-key="history.sort_score"></button>
+                    <label for="importCsvInput" class="import-button" data-i18n-key="history.button_import_csv"></label>
                     <input type="file" id="importCsvInput" accept=".csv" style="display: none;">
-                    <button class="export-button" id="exportBtn">Exporter Runs CSV</button>
+                    <button class="export-button" id="exportBtn" data-i18n-key="history.button_export_csv"></button>
                 </div>
                 <div id="importStatus" class="import-status"></div>
                 <div class="history-list" id="historyList"></div>
             </div>
-
-            <!-- Vue des options -->
+            <!-- Vue des Options -->
             <div class="view" id="optionsView">
                 <div class="option-group">
-                    <div class="option-title">Gérer les chiens</div>
-                    <div class="dog-management-form"><input type="text" id="newDogNameInput" class="form-input" placeholder="Ajouter un nouveau chien..."><button id="addDogBtn" class="action-button material-icons">add_circle</button></div>
+                    <div class="option-title" data-i18n-key="options.manage_dogs_title"></div>
+                    <div class="dog-management-form"><input type="text" id="newDogNameInput" class="form-input" data-i18n-placeholder="options.add_dog_placeholder"><button id="addDogBtn" class="action-button material-icons">add_circle</button></div>
                     <div id="dogProfilesList" class="dog-profiles-list"></div>
                 </div>
                 <div class="option-group">
-                    <div class="option-title">Seuil Minimum de Lancés</div>
-                    <input type="number" class="form-input" id="seuilInput" min="0" value="0">
+                    <div class="option-title" data-i18n-key="options.rules_title"></div>
+                    <div class="sub-option">
+                        <span data-i18n-key="options.min_throws_label"></span>
+                        <input type="number" class="form-input" id="seuilInput" min="0" value="0" style="max-width: 80px; text-align: center; padding: 8px;">
+                    </div>
+                    <div class="sub-option">
+                        <span data-i18n-key="options.fault_button_label"></span>
+                         <div class="option-toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="faultButtonToggle">
+                                <span class="slider"></span>
+                            </label>
+                         </div>
+                    </div>
+                    <div class="sub-option">
+                        <span data-i18n-key="options.take_as_throw_label"></span>
+                        <div class="option-toggle-group">
+                             <span id="takeAsThrowLabel" class="rule-mode-label"></span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="takeAsThrowToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="option-group">
-                    <div class="option-title">Bouton Faute</div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="faultButtonToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span id="faultButtonLabel">Désactivé</span>
-                </div>
-                <div class="option-group">
-                    <div class="option-title">Thème Sombre/Clair</div>
-                    <label class="toggle-switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
-                    <span id="themeLabel">Clair</span>
-                </div>
-                <div class="option-group">
-                    <div class="option-title">Thème de Couleur</div>
+                    <div class="option-title" data-i18n-key="options.interface_title"></div>
+                     <div class="sub-option" id="fullscreenOption">
+                        <span data-i18n-key="options.fullscreen_label"></span>
+                        <div class="option-toggle-group">
+                            <button id="fullscreenBtn" class="action-button" style="flex: 0; padding: 8px;"><span class="material-icons">fullscreen</span></button>
+                        </div>
+                    </div>
+                     <div class="sub-option">
+                        <span data-i18n-key="options.theme_label"></span>
+                        <div class="option-toggle-group">
+                            <label class="toggle-switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="sub-option">
+                        <span data-i18n-key="options.transition_label"></span>
+                        <div class="option-toggle-group">
+                            <span id="transitionLabel" class="rule-mode-label"></span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="transitionToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                     <div class="sub-option">
+                        <span data-i18n-key="options.color_theme_label"></span>
+                    </div>
                     <div class="color-theme-selector" id="colorThemeSelector"></div>
                 </div>
                 <div class="option-group">
-                    <div class="option-title">Retour Haptique (Vibration)</div>
-                    <label class="toggle-switch"><input type="checkbox" id="hapticToggle"><span class="slider"></span></label>
-                    <span id="hapticLabel">Activé</span>
-                </div>
-                <div class="option-group">
-                    <div class="option-title">Type de Transition</div>
-                    <label class="toggle-switch"><input type="checkbox" id="transitionToggle"><span class="slider"></span></label>
-                    <span id="transitionLabel">Horizontale</span>
-                </div>
-                <div class="option-group">
-                    <div class="option-title">Partage</div>
+                    <div class="option-title" data-i18n-key="options.features_title"></div>
                     <div class="sub-option">
-                        <span>Activer le bouton de partage</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="shareToggle">
-                            <span class="slider"></span>
-                        </label>
+                        <span data-i18n-key="options.haptic_label"></span>
+                        <div class="option-toggle-group">
+                            <label class="toggle-switch"><input type="checkbox" id="hapticToggle"><span class="slider"></span></label>
+                        </div>
                     </div>
                     <div class="sub-option">
-                        <span>Afficher les stats avancées</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="advancedStatsToggle">
-                            <span class="slider"></span>
-                        </label>
+                        <span data-i18n-key="options.share_button_label"></span>
+                        <div class="option-toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="shareToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="sub-option">
+                        <span data-i18n-key="options.advanced_stats_label"></span>
+                         <div class="option-toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="advancedStatsToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                     <div class="sub-option">
+                        <span data-i18n-key="options.csv_buttons_label"></span>
+                        <div class="option-toggle-group">
+                            <label class="toggle-switch"><input type="checkbox" id="csvToggle"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="sub-option">
+                        <span data-i18n-key="options.language_label"></span>
+                        <div id="languageSelectorContainer" class="custom-select">
+                            <div id="selectedLanguage" class="select-selected"></div>
+                            <div id="languageOptions" class="select-items select-hide"></div>
+                        </div>
                     </div>
                 </div>
-                 <div class="option-group">
-                    <div class="option-title">Boutons d'import/export Runs CSV</div>
-                    <label class="toggle-switch"><input type="checkbox" id="csvToggle"><span class="slider"></span></label>
-                    <span id="csvLabel">Activé</span>
-                </div>
                 <div class="option-group">
-                    <div class="option-title">Données</div>
+                    <div class="option-title" data-i18n-key="options.data_title"></div>
                     <div class="data-buttons">
-                        <button id="backupBtn" class="action-button outline">Backup</button>
-                        <label for="restoreInput" class="action-button outline">Restore</label>
+                        <button id="backupBtn" class="action-button outline" data-i18n-key="options.backup_button"></button>
+                        <label for="restoreInput" class="action-button outline" data-i18n-key="options.restore_button"></label>
                         <input type="file" id="restoreInput" accept=".json" style="display: none;">
                     </div>
-                    <button class="danger-button" id="purgeBtn">Purger l'historique</button>
+                    <button class="danger-button" id="purgeBtn" data-i18n-key="options.purge_button"></button>
                 </div>
                 <div class="version-container"><p id="versionDisplay"></p></div>
             </div>
         </div>
     </div>
-
     <!-- Modales -->
-    <div class="modal" id="confirmModal"><div class="modal-content"><p id="modalMessage"></p><div class="modal-buttons"><button class="modal-button modal-cancel" id="modalCancel">Annuler</button><button class="modal-button modal-confirm" id="modalConfirm">Confirmer</button></div></div></div>
-    <div class="modal" id="saveModal"><div class="modal-content"><h3 class="modal-title">Sauvegarder le Run</h3><div class="save-form" id="saveForm"><div class="form-group"><label class="form-label">Nom du chien</label><input type="text" class="form-input" id="dogNameInput" placeholder="Entrez le nom du chien"><div class="suggestions" id="suggestions" style="display: none;"></div><div class="tag-preview" id="tagPreview"></div></div><div class="form-group"><label class="form-label">Notes (facultatif)</label><textarea class="form-input" id="notesInput" rows="3" placeholder="Ajoutez des remarques..."></textarea></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="cancelSaveBtn">Annuler</button><button class="modal-button modal-confirm" id="confirmSaveBtn">Enregistrer</button></div></div></div></div>
-    <div class="modal" id="editModal"><div class="modal-content"><h3 class="modal-title">Modifier le Run</h3><div class="form-group"><label class="form-label">Nom du chien</label><input type="text" class="form-input" id="editDogNameInput"></div><div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="editNotesInput" rows="3"></textarea></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="cancelUpdateBtn">Annuler</button><button class="modal-button modal-confirm" id="confirmUpdateBtn">Mettre à jour</button></div></div></div>
-    <div class="modal" id="shareModal"><div class="modal-content"><h3 class="modal-title">Partager le Résultat</h3><div id="shareImageContainer"><div class="loader"></div></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="closeShareBtn">Fermer</button><a href="#" class="modal-button modal-confirm" id="downloadShareBtn" download="disc-dog-result.png">Télécharger</a></div></div></div>
-
-    <!-- Template pour l'image de partage (caché) -->
+    <div class="modal" id="confirmModal"><div class="modal-content"><p id="modalMessage"></p><div class="modal-buttons"><button class="modal-button modal-cancel" id="modalCancel" data-i18n-key="modal.button_cancel"></button><button class="modal-button modal-confirm" id="modalConfirm" data-i18n-key="modal.button_confirm"></button></div></div></div>
+    <div class="modal" id="saveModal"><div class="modal-content"><h3 class="modal-title" data-i18n-key="modal.save_run_title"></h3><div class="save-form" id="saveForm"><div class="form-group"><label class="form-label" data-i18n-key="modal.dog_name_label"></label><input type="text" class="form-input" id="dogNameInput" data-i18n-placeholder="modal.dog_name_placeholder"><div class="suggestions" id="suggestions" style="display: none;"></div><div class="tag-preview" id="tagPreview"></div></div><div class="form-group"><label class="form-label" data-i18n-key="modal.notes_label"></label><textarea class="form-input" id="notesInput" rows="3" data-i18n-placeholder="modal.notes_placeholder"></textarea></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="cancelSaveBtn" data-i18n-key="modal.button_cancel"></button><button class="modal-button modal-confirm" id="confirmSaveBtn" data-i18n-key="modal.button_register"></button></div></div></div></div>
+    <div class="modal" id="editModal"><div class="modal-content"><h3 class="modal-title" data-i18n-key="modal.edit_run_title"></h3><div class="form-group"><label class="form-label" data-i18n-key="modal.dog_name_label"></label><input type="text" class="form-input" id="editDogNameInput"></div><div class="form-group"><label class="form-label" data-i18n-key="modal.notes_label"></label><textarea class="form-input" id="editNotesInput" rows="3"></textarea></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="cancelUpdateBtn" data-i18n-key="modal.button_cancel"></button><button class="modal-button modal-confirm" id="confirmUpdateBtn" data-i18n-key="modal.button_update"></button></div></div></div>
+    <div class="modal" id="shareModal"><div class="modal-content"><h3 class="modal-title" data-i18n-key="modal.share_title"></h3><div id="shareImageContainer"><div class="loader"></div></div><div class="modal-buttons"><button class="modal-button modal-cancel" id="closeShareBtn" data-i18n-key="modal.share_button_close"></button><a href="#" class="modal-button modal-confirm" id="downloadShareBtn" download="disc-dog-result.png" data-i18n-key="modal.share_button_download"></a></div></div></div>
+    <!-- Carte de partage (cachée) -->
     <div id="shareCard" class="share-card">
-        <div class="share-header"><h3>Catch Ratio</h3></div>
+        <div class="share-header"><h3 data-i18n-key="share.card_header"></h3></div>
         <div class="share-body">
             <h2 id="shareDogName"></h2>
             <p id="shareDate"></p>
             <p id="shareRunTag"></p>
-            <div class="share-score-container"><div id="shareScore" class="share-score"></div><div class="share-score-label">Catch Ratio</div></div>
+            <div class="share-score-container"><div id="shareScore" class="share-score"></div><div class="share-score-label" data-i18n-key="share.card_header"></div></div>
             <div class="share-stats-grid">
-                <div class="share-stat"><span id="shareCatches"></span><span>Catches</span></div>
-                <div class="share-stat"><span id="shareDrops"></span><span>Drops</span></div>
-                <div class="share-stat"><span id="shareTakes"></span><span>Takes</span></div>
-                <div class="share-stat"><span id="shareTotal"></span><span>Total</span></div>
+                <div class="share-stat"><span id="shareCatches"></span><span data-i18n-key="share.catches_label_card"></span></div>
+                <div class="share-stat"><span id="shareDrops"></span><span data-i18n-key="share.drops_label_card"></span></div>
+                <div class="share-stat"><span id="shareTakes"></span><span data-i18n-key="share.takes_label_card"></span></div>
+                <div class="share-stat"><span id="shareTotal"></span><span data-i18n-key="share.total_label_card"></span></div>
             </div>
             <div class="share-timeline" id="shareTimeline"></div>
             <div class="share-advanced-stats" id="shareAdvancedStats">
-                <!-- Les statistiques avancées seront injectées ici par JavaScript -->
             </div>
         </div>
-        <div class="share-footer"><p>Made with Catch Ratio ToolBox</p></div>
+        <div class="share-footer"><p data-i18n-key="share.card_footer"></p></div>
     </div>
 
     <script>
-        // Attend que le contenu du DOM soit entièrement chargé avant d'exécuter le script
+        // --- SECTION TRADUCTIONS ---
+        // Contient toutes les chaînes de caractères pour l'internationalisation.
+        const translations = {
+            fr: {
+                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Accueil","nav.history":"Historique","nav.options":"Options","measure.total_throws_label":"Total Lancés :","measure.no_throws":"Aucun lancé pour le moment","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Faute","measure.button_undo":"UNDO","measure.button_end_run":"Fin du Run","measure.button_results":"RESULTAT","measure.button_back_to_run":"Retour au Run","results.title":"Résultat du Run","results.score_summary":"Catch Ratio : {score} / {totalThrows} lancés","results.seuil_info":" (Seuil: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Temps Final","results.button_reset":"RAZ","results.button_save":"SAVE","history.search_placeholder":"Rechercher par chien ou note...","history.sort_date":"Date/Heure","history.sort_name":"Nom (A-Z)","history.sort_score":"Score","history.button_import_csv":"Importer Runs CSV","history.button_export_csv":"Exporter Runs CSV","history.no_runs_found":"Aucun run correspondant.","history.item_date_label":"Date:","history.item_time_label":"Heure:","history.item_duration_label":"Temps:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lancés:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Statistiques Avancées","history.adv_start_ratio_label":"Ratio Début (30s)","history.adv_end_ratio_label":"Ratio Fin (30s)","history.adv_best_streak_label":"Meilleure Série","history.adv_consistency_label":"Consistance","options.manage_dogs_title":"Gérer les chiens","options.add_dog_placeholder":"Ajouter un nouveau chien...","options.no_profiles":"Aucun profil.","options.rename_dog_prompt":"Renommer \"{oldName}\" :","options.rules_title":"Règles","options.min_throws_label":"Seuil Minimum de Lancés","options.fault_button_label":"Bouton Faute","options.take_as_throw_label":"Prendre les Takes en compte","options.take_as_throw_yes":"Oui","options.take_as_throw_no":"Non","options.interface_title":"Interface","options.fullscreen_label":"Plein Écran","options.theme_label":"Thème Sombre/Clair","options.transition_label":"Type de Transition","options.transition_horizontal":"Horizontale","options.transition_vertical":"Verticale","options.color_theme_label":"Thème de Couleur","options.features_title":"Fonctionnalités","options.haptic_label":"Retour Haptique (Vibration)","options.share_button_label":"Activer le bouton de partage","options.advanced_stats_label":"Afficher les stats avancées","options.csv_buttons_label":"Boutons d'import/export CSV","options.data_title":"Données","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purger l'historique","options.language_label":"Langue",
+                "modal.confirm_delete_dog_profile":"Vraiment supprimer ce profil ?","modal.confirm_delete_dog_message":"Vraiment supprimer \"{dogName}\" ?","modal.confirm_delete_dog_associated_runs":" {runsCount} run(s) associé(s) ne seront PAS supprimés.","modal.confirm_exit_run_in_progress":"Un run est en cours. Si vous quittez, il sera annulé.","modal.confirm_exit_unsaved_run":"Le run n'a pas été sauvegardé. Voulez-vous quitter sans sauvegarder ?","modal.confirm_reset_run":"Vraiment réinitialiser ce run ?","modal.confirm_delete_run":"Vraiment supprimer ce run ?","modal.confirm_purge_history":"Vraiment supprimer tout l'historique ? Cette action est irréversible.","modal.error_empty_history_export":"L'historique est vide. Rien à exporter.","modal.button_cancel":"Annuler","modal.button_confirm":"Confirmer","modal.save_run_title":"Sauvegarder le Run","modal.dog_name_label":"Nom du chien","modal.dog_name_placeholder":"Entrez le nom du chien","modal.tag_preview":"Sera sauvegardé comme : #Run{runNumber}","modal.notes_label":"Notes (facultatif)","modal.notes_placeholder":"Ajoutez des remarques...","modal.button_register":"Enregistrer","modal.edit_run_title":"Modifier le Run","modal.button_update":"Mettre à jour","modal.error_enter_dog_name":"Veuillez entrer le nom du chien","modal.share_title":"Partager le Résultat","modal.share_button_download":"Télécharger","modal.share_button_close":"Fermer","share.card_header":"Catch Ratio","share.card_footer":"Made with Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Total",
+                "import.status_success":"{count} run(s) importé(s) avec succès !","import.status_no_new_runs":"Aucun nouveau run à importer. Les runs existants ont été ignorés.","import.status_error":"Erreur d'importation : {errorMessage}","import.error_empty_csv":"Le fichier CSV est vide ou ne contient que les en-têtes.","import.error_wrong_headers":"Les en-têtes du fichier CSV sont incorrects ou manquants. Assurez-vous que le fichier a été exporté depuis une version compatible de l'application.","export.status_success":"Exportation CSV réussie !","backup.success":"Restauration réussie. L'application va maintenant se recharger pour appliquer les modifications.","backup.error_invalid_file":"Erreur : Le fichier de sauvegarde semble invalide ou corrompu.","backup.error_reading_file":"Erreur lors de la lecture du fichier : {errorMessage}"
+            },
+            en: {
+                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Home","nav.history":"History","nav.options":"Options","measure.total_throws_label":"Total Throws:","measure.no_throws":"No throws yet","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fault","measure.button_undo":"UNDO","measure.button_end_run":"End Run","measure.button_results":"RESULT","measure.button_back_to_run":"Back to Run","results.title":"Run Result","results.score_summary":"Catch Ratio: {score} / {totalThrows} throws","results.seuil_info":" (Threshold: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Final Time","results.button_reset":"RESET","results.button_save":"SAVE","history.search_placeholder":"Search by dog or note...","history.sort_date":"Date/Time","history.sort_name":"Name (A-Z)","history.sort_score":"Score","history.button_import_csv":"Import Runs CSV","history.button_export_csv":"Export Runs CSV","history.no_runs_found":"No matching runs.","history.item_date_label":"Date:","history.item_time_label":"Time:","history.item_duration_label":"Time:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Throws:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Advanced Stats","history.adv_start_ratio_label":"Start Ratio (30s)","history.adv_end_ratio_label":"End Ratio (30s)","history.adv_best_streak_label":"Best Streak","history.adv_consistency_label":"Consistency","options.manage_dogs_title":"Manage Dogs","options.add_dog_placeholder":"Add a new dog...","options.no_profiles":"No profiles.","options.rename_dog_prompt":"Rename \"{oldName}\":","options.rules_title":"Rules","options.min_throws_label":"Minimum Throws Threshold","options.fault_button_label":"Fault Button","options.take_as_throw_label":"Count Takes as Throws","options.take_as_throw_yes":"Yes","options.take_as_throw_no":"No","options.interface_title":"Interface","options.fullscreen_label":"Full Screen","options.theme_label":"Dark/Light Theme","options.transition_label":"Transition Type","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertical","options.color_theme_label":"Color Theme","options.features_title":"Features","options.haptic_label":"Haptic Feedback (Vibration)","options.share_button_label":"Enable Share Button","options.advanced_stats_label":"Show Advanced Stats","options.csv_buttons_label":"CSV Import/Export Buttons","options.data_title":"Data","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purge History","options.language_label":"Language",
+                "modal.confirm_delete_dog_profile":"Really delete this profile?","modal.confirm_delete_dog_message":"Really delete \"{dogName}\"?","modal.confirm_delete_dog_associated_runs":"{runsCount} associated run(s) will NOT be deleted.","modal.confirm_exit_run_in_progress":"A run is in progress. If you leave, it will be cancelled.","modal.confirm_exit_unsaved_run":"The run has not been saved. Do you want to leave without saving?","modal.confirm_reset_run":"Really reset this run?","modal.confirm_delete_run":"Really delete this run?","modal.confirm_purge_history":"Really delete the entire history? This action is irreversible.","modal.error_empty_history_export":"History is empty. Nothing to export.","modal.button_cancel":"Cancel","modal.button_confirm":"Confirm","modal.save_run_title":"Save Run","modal.dog_name_label":"Dog's Name","modal.dog_name_placeholder":"Enter the dog's name","modal.tag_preview":"Will be saved as: #Run{runNumber}","modal.notes_label":"Notes (optional)","modal.notes_placeholder":"Add remarks...","modal.button_register":"Save","modal.edit_run_title":"Edit Run","modal.button_update":"Update","modal.error_enter_dog_name":"Please enter the dog's name","modal.share_title":"Share Result","modal.share_button_download":"Download","modal.share_button_close":"Close","share.card_header":"Catch Ratio","share.card_footer":"Made with Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Total",
+                "import.status_success":"{count} run(s) imported successfully!","import.status_no_new_runs":"No new runs to import. Existing runs have been ignored.","import.status_error":"Import error: {errorMessage}","import.error_empty_csv":"The CSV file is empty or contains only headers.","import.error_wrong_headers":"The CSV headers are incorrect or missing. Make sure the file was exported from a compatible version of the application.","export.status_success":"CSV export successful!","backup.success":"Restore successful. The application will now reload to apply the changes.","backup.error_invalid_file":"Error: The backup file seems invalid or corrupt.","backup.error_reading_file":"Error reading file: {errorMessage}"
+            },
+            es: {
+                "app.title":"Catch Ratio ToolBox","app.version":"Versión {version}","nav.home":"Inicio","nav.history":"Historial","nav.options":"Opciones","measure.total_throws_label":"Total de Lanzamientos:","measure.no_throws":"No hay lanzamientos todavía","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Falta","measure.button_undo":"UNDO","measure.button_end_run":"Finalizar Carrera","measure.button_results":"RESULTADO","measure.button_back_to_run":"Volver a la Carrera","results.title":"Resultado de la Carrera","results.score_summary":"Catch Ratio: {score} / {totalThrows} lanzamientos","results.seuil_info":" (Umbral: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Tiempo Final","results.button_reset":"REINICIAR","results.button_save":"GUARDAR","history.search_placeholder":"Buscar por perro o nota...","history.sort_date":"Fecha/Hora","history.sort_name":"Nombre (A-Z)","history.sort_score":"Puntuación","history.button_import_csv":"Importar Carreras CSV","history.button_export_csv":"Exportar Carreras CSV","history.no_runs_found":"No se encontraron carreras.","history.item_date_label":"Fecha:","history.item_time_label":"Hora:","history.item_duration_label":"Tiempo:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lanzamientos:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Estadísticas Avanzadas","history.adv_start_ratio_label":"Ratio Inicial (30s)","history.adv_end_ratio_label":"Ratio Final (30s)","history.adv_best_streak_label":"Mejor Racha","history.adv_consistency_label":"Consistencia","options.manage_dogs_title":"Administrar Perros","options.add_dog_placeholder":"Añadir un nuevo perro...","options.no_profiles":"No hay perfiles.","options.rename_dog_prompt":"Renombrar \"{oldName}\":","options.rules_title":"Reglas","options.min_throws_label":"Umbral Mínimo de Lanzamientos","options.fault_button_label":"Botón de Falta","options.take_as_throw_label":"Contar 'Takes' como Lanzamientos","options.take_as_throw_yes":"Sí","options.take_as_throw_no":"No","options.interface_title":"Interfaz","options.fullscreen_label":"Pantalla Completa","options.theme_label":"Tema Oscuro/Claro","options.transition_label":"Tipo de Transición","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertical","options.color_theme_label":"Tema de Color","options.features_title":"Características","options.haptic_label":"Respuesta Háptica (Vibración)","options.share_button_label":"Activar Botón de Compartir","options.advanced_stats_label":"Mostrar Estadísticas Avanzadas","options.csv_buttons_label":"Botones de Importar/Exportar CSV","options.data_title":"Datos","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purgar Historial","options.language_label":"Idioma",
+                "modal.confirm_delete_dog_profile":"¿Realmente quieres eliminar este perfil?","modal.confirm_delete_dog_message":"¿Realmente quieres eliminar a \"{dogName}\"?","modal.confirm_delete_dog_associated_runs":"{runsCount} carrera(s) asociada(s) NO se eliminarán.","modal.confirm_exit_run_in_progress":"Hay una carrera en progreso. Si sales, se cancelará.","modal.confirm_exit_unsaved_run":"La carrera no ha sido guardada. ¿Quieres salir sin guardar?","modal.confirm_reset_run":"¿Realmente quieres reiniciar esta carrera?","modal.confirm_delete_run":"¿Realmente quieres eliminar esta carrera?","modal.confirm_purge_history":"¿Realmente quieres eliminar todo el historial? Esta acción es irreversible.","modal.error_empty_history_export":"El historial está vacío. No hay nada que exportar.","modal.button_cancel":"Cancelar","modal.button_confirm":"Confirmar","modal.save_run_title":"Guardar Carrera","modal.dog_name_label":"Nombre del Perro","modal.dog_name_placeholder":"Introduce el nombre del perro","modal.tag_preview":"Se guardará como: #Carrera{runNumber}","modal.notes_label":"Notas (opcional)","modal.notes_placeholder":"Añadir comentarios...","modal.button_register":"Guardar","modal.edit_run_title":"Editar Carrera","modal.button_update":"Actualizar","modal.error_enter_dog_name":"Por favor, introduce el nombre del perro","modal.share_title":"Compartir Resultado","modal.share_button_download":"Descargar","modal.share_button_close":"Cerrar","share.card_header":"Catch Ratio","share.card_footer":"Hecho con Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Total",
+                "import.status_success":"¡{count} carrera(s) importada(s) con éxito!","import.status_no_new_runs":"No hay nuevas carreras para importar. Las carreras existentes han sido ignoradas.","import.status_error":"Error de importación: {errorMessage}","import.error_empty_csv":"El archivo CSV está vacío o solo contiene encabezados.","import.error_wrong_headers":"Los encabezados del CSV son incorrectos o faltan. Asegúrate de que el archivo fue exportado desde una versión compatible de la aplicación.","export.status_success":"¡Exportación de CSV exitosa!","backup.success":"Restauración exitosa. La aplicación se recargará para aplicar los cambios.","backup.error_invalid_file":"Error: El archivo de copia de seguridad parece inválido o corrompu.","backup.error_reading_file":"Error al leer el archivo: {errorMessage}"
+            },
+            it: {
+                "app.title":"Catch Ratio ToolBox","app.version":"Versione {version}","nav.home":"Home","nav.history":"Cronologia","nav.options":"Opzioni","measure.total_throws_label":"Lanci Totali:","measure.no_throws":"Nessun lancio per ora","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fallo","measure.button_undo":"ANNULLA","measure.button_end_run":"Fine Run","measure.button_results":"RISULTATO","measure.button_back_to_run":"Torna al Run","results.title":"Risultato del Run","results.score_summary":"Catch Ratio: {score} / {totalThrows} lanci","results.seuil_info":" (Soglia: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Tempo Finale","results.button_reset":"AZZERA","results.button_save":"SALVA","history.search_placeholder":"Cerca per cane o nota...","history.sort_date":"Data/Ora","history.sort_name":"Nome (A-Z)","history.sort_score":"Punteggio","history.button_import_csv":"Importa Run CSV","history.button_export_csv":"Esporta Run CSV","history.no_runs_found":"Nessun run trovato.","history.item_date_label":"Data:","history.item_time_label":"Ora:","history.item_duration_label":"Tempo:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lanci:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Statistiche Avanzate","history.adv_start_ratio_label":"Ratio Inizio (30s)","history.adv_end_ratio_label":"Ratio Fine (30s)","history.adv_best_streak_label":"Migliore Serie","history.adv_consistency_label":"Consistenza","options.manage_dogs_title":"Gestisci Cani","options.add_dog_placeholder":"Aggiungi un nuovo cane...","options.no_profiles":"Nessun profilo.","options.rename_dog_prompt":"Rinomina \"{oldName}\":","options.rules_title":"Regole","options.min_throws_label":"Soglia Minima Lanci","options.fault_button_label":"Pulsante Fallo","options.take_as_throw_label":"Conta 'Takes' come Lanci","options.take_as_throw_yes":"Sì","options.take_as_throw_no":"No","options.interface_title":"Interfaccia","options.fullscreen_label":"Schermo Intero","options.theme_label":"Tema Scuro/Chiaro","options.transition_label":"Tipo di Transizione","options.transition_horizontal":"Orizzontale","options.transition_vertical":"Verticale","options.color_theme_label":"Tema Colore","options.features_title":"Funzionalità","options.haptic_label":"Feedback Aptico (Vibrazione)","options.share_button_label":"Abilita Pulsante Condividi","options.advanced_stats_label":"Mostra Statistiche Avanzate","options.csv_buttons_label":"Pulsanti Importa/Esporta CSV","options.data_title":"Dati","options.backup_button":"Backup","options.restore_button":"Ripristina","options.purge_button":"Svuota Cronologia","options.language_label":"Lingua",
+                "modal.confirm_delete_dog_profile":"Eliminare davvero questo profilo?","modal.confirm_delete_dog_message":"Eliminare davvero \"{oldName}\"?","modal.confirm_delete_dog_associated_runs":"{runsCount} run associato/i NON verranno eliminati.","modal.confirm_exit_run_in_progress":"C'è un run in corso. Se esci, verrà annullato.","modal.confirm_exit_unsaved_run":"Il run non è stato salvato. Vuoi uscire senza salvare?","modal.confirm_reset_run":"Reimpostare davvero questo run?","modal.confirm_delete_run":"Eliminare davvero questo run?","modal.confirm_purge_history":"Eliminare davvero tutta la cronologia? Questa azione è irreversibile.","modal.error_empty_history_export":"La cronologia è vuota. Niente da esportare.","modal.button_cancel":"Annulla","modal.button_confirm":"Conferma","modal.save_run_title":"Salva Run","modal.dog_name_label":"Nome del Cane","modal.dog_name_placeholder":"Inserisci il nome del cane","modal.tag_preview":"Sarà salvato come: #Run{runNumber}","modal.notes_label":"Note (opzionale)","modal.notes_placeholder":"Aggiungi commenti...","modal.button_register":"Salva","modal.edit_run_title":"Modifica Run","modal.button_update":"Aggiorna","modal.error_enter_dog_name":"Per favore, inserisci il nome del cane","modal.share_title":"Condividi Risultato","modal.share_button_download":"Scarica","modal.share_button_close":"Chiudi","share.card_header":"Catch Ratio","share.card_footer":"Realizzato con Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Totale",
+                "import.status_success":"{count} run importato/i con successo!","import.status_no_new_runs":"Nessun nuovo run da importare. I run esistenti sono stati ignorati.","import.status_error":"Errore di importazione: {errorMessage}","import.error_empty_csv":"Il file CSV è vuoto o contiene solo le intestazioni.","import.error_wrong_headers":"Le intestazioni del CSV non sono corrette o mancano. Assicurati che il file sia stato esportato da una versione compatibile dell'applicazione.","export.status_success":"Esportazione CSV riuscita!","backup.success":"Ripristino riuscito. L'applicazione si ricaricherà per applicare le modifiche.","backup.error_invalid_file":"Errore: Il file di backup sembra non valido o corrotto.","backup.error_reading_file":"Errore durante la lettura del file: {errorMessage}"
+            },
+            de: {
+                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Start","nav.history":"Verlauf","nav.options":"Optionen","measure.total_throws_label":"Würfe Gesamt:","measure.no_throws":"Noch keine Würfe","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fehler","measure.button_undo":"RÜCKGÄNGIG","measure.button_end_run":"Run beenden","measure.button_results":"ERGEBNIS","measure.button_back_to_run":"Zurück zum Run","results.title":"Run-Ergebnis","results.score_summary":"Catch Ratio: {score} / {totalThrows} Würfe","results.seuil_info":" (Schwelle: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Endzeit","results.button_reset":"ZURÜCKSETZEN","results.button_save":"SPEICHERN","history.search_placeholder":"Suche nach Hund oder Notiz...","history.sort_date":"Datum/Uhrzeit","history.sort_name":"Name (A-Z)","history.sort_score":"Punkte","history.button_import_csv":"Runs importieren (CSV)","history.button_export_csv":"Runs exportieren (CSV)","history.no_runs_found":"Keine passenden Runs gefunden.","history.item_date_label":"Datum:","history.item_time_label":"Uhrzeit:","history.item_duration_label":"Zeit:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Würfe:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Erweiterte Statistiken","history.adv_start_ratio_label":"Start-Ratio (30s)","history.adv_end_ratio_label":"End-Ratio (30s)","history.adv_best_streak_label":"Beste Serie","history.adv_consistency_label":"Konsistenz","options.manage_dogs_title":"Hunde verwalten","options.add_dog_placeholder":"Neuen Hund hinzufügen...","options.no_profiles":"Keine Profile.","options.rename_dog_prompt":"\"{oldName}\" umbenennen:","options.rules_title":"Regeln","options.min_throws_label":"Mindestwurfgrenze","options.fault_button_label":"Fehler-Button","options.take_as_throw_label":"'Takes' als Würfe zählen","options.take_as_throw_yes":"Ja","options.take_as_throw_no":"Nein","options.interface_title":"Oberfläche","options.fullscreen_label":"Vollbild","options.theme_label":"Dunkles/Helles Thema","options.transition_label":"Übergangstyp","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertikal","options.color_theme_label":"Farbthema","options.features_title":"Funktionen","options.haptic_label":"Haptisches Feedback (Vibration)","options.share_button_label":"Teilen-Button aktivieren","options.advanced_stats_label":"Erweiterte Statistiken anzeigen","options.csv_buttons_label":"CSV Import/Export Buttons","options.data_title":"Daten","options.backup_button":"Backup","options.restore_button":"Wiederherstellen","options.purge_button":"Verlauf leeren","options.language_label":"Sprache",
+                "modal.confirm_delete_dog_profile":"Dieses Profil wirklich löschen?","modal.confirm_delete_dog_message":"\"{dogName}\" wirklich löschen?","modal.confirm_delete_dog_associated_runs":"{runsCount} zugehörige(r) Run(s) werden NICHT gelöscht.","modal.confirm_exit_run_in_progress":"Ein Run läuft gerade. Wenn du gehst, wird er abgebrochen.","modal.confirm_exit_unsaved_run":"Der Run wurde nicht gespeichert. Möchtest du ohne Speichern verlassen?","modal.confirm_reset_run":"Diesen Run wirklich zurücksetzen?","modal.confirm_delete_run":"Diesen Run wirklich löschen?","modal.confirm_purge_history":"Den gesamten Verlauf wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.","modal.error_empty_history_export":"Der Verlauf ist leer. Nichts zu exportieren.","modal.button_cancel":"Abbrechen","modal.button_confirm":"Bestätigen","modal.save_run_title":"Run speichern","modal.dog_name_label":"Name des Hundes","modal.dog_name_placeholder":"Namen des Hundes eingeben","modal.tag_preview":"Wird gespeichert als: #Run{runNumber}","modal.notes_label":"Notizen (optional)","modal.notes_placeholder":"Anmerkungen hinzufügen...","modal.button_register":"Speichern","modal.edit_run_title":"Run bearbeiten","modal.button_update":"Aktualisieren","modal.error_enter_dog_name":"Bitte gib den Namen des Hundes ein","modal.share_title":"Ergebnis teilen","modal.share_button_download":"Herunterladen","modal.share_button_close":"Schließen","share.card_header":"Catch Ratio","share.card_footer":"Erstellt mit Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Gesamt",
+                "import.status_success":"{count} Run(s) erfolgreich importiert!","import.status_no_new_runs":"Keine neuen Runs zum Importieren. Bestehende Runs wurden ignoriert.","import.status_error":"Importfehler: {errorMessage}","import.error_empty_csv":"Die CSV-Datei ist leer oder enthält nur Kopfzeilen.","import.error_wrong_headers":"Die CSV-Kopfzeilen sind falsch oder fehlen. Stellen Sie sicher, dass die Datei von einer kompatiblen Anwendungsversion exportiert wurde.","export.status_success":"CSV-Export erfolgreich!","backup.success":"Wiederherstellung erfolgreich. Die Anwendung wird jetzt neu geladen, um die Änderungen zu übernehmen.","backup.error_invalid_file":"Fehler: Die Sicherungsdatei scheint ungültig oder beschädigt zu sein.","backup.error_reading_file":"Fehler beim Lesen der Datei: {errorMessage}"
+            }
+        };
+
+        // --- FIN SECTION TRADUCTIONS ---
+
+        // Attend que le contenu du DOM soit entièrement chargé avant d'exécuter le script.
         document.addEventListener('DOMContentLoaded', () => {
-            
             /**
-             * Classe principale pour gérer l'application Disc Dog Scorer.
+             * Classe principale pour gérer la logique de l'application de pointage pour le Disc Dog.
              */
             class DiscDogScorer {
                 constructor() {
-                    // --- Propriétés de l'application ---
-                    this.version = '1.3.0'; // Version mise à jour
+                    // Initialisation des propriétés de l'application
+                    this.version = '1.8.0'; // Version mise à jour
                     this.currentView = 'measure';
                     this.editingRunId = null;
                     this.dogProfiles = [];
                     this.lastRunData = null;
                     this.modalConfirmCallback = null;
 
-                    // --- Thèmes et couleurs ---
+                    // Détection de la langue du navigateur ou utilisation de la langue sauvegardée
+                    const savedLang = localStorage.getItem('language');
+                    if (savedLang) {
+                        this.language = savedLang;
+                    } else {
+                        const browserLang = (navigator.language || navigator.userLanguage).split('-')[0];
+                        this.language = Object.keys(translations).includes(browserLang) ? browserLang : 'en';
+                    }
+
+                    this.languageFlags = {
+                        fr: '🇫🇷',
+                        en: '🇬🇧',
+                        es: '🇪🇸',
+                        it: '🇮🇹',
+                        de: '🇩🇪'
+                    };
+
                     this.colorThemes = [
                         { name: 'rouge', color: '#d32f2f' }, { name: 'rose', color: '#E91E63' },
                         { name: 'magenta', color: '#C2185B' }, { name: 'orange', color: '#FF9800' },
@@ -990,19 +1177,14 @@
                         { name: 'violet', color: '#673AB7' }, { name: 'ardoise', color: '#607D8B' },
                         { name: 'acier', color: '#546E7A' },
                     ];
-                    
-                    // --- État du run ---
                     this.isRunning = false;
                     this.isRunCompleted = false;
                     this.isRunSaved = false;
                     this.startTime = null;
                     this.elapsedTime = 0;
                     this.timerInterval = null;
-                    
-                    // --- Statistiques du run ---
-                    this.actionHistory = []; // Historique détaillé des actions {type, time}
-
-                    // --- Options chargées depuis le localStorage ---
+                    this.actionHistory = [];
+                    // Chargement des préférences utilisateur depuis le localStorage
                     this.theme = localStorage.getItem('theme') || 'light';
                     this.colorTheme = localStorage.getItem('colorTheme') || 'blue';
                     this.transitionStyle = localStorage.getItem('transitionStyle') || 'horizontal';
@@ -1012,59 +1194,93 @@
                     this.csvButtonsEnabled = (localStorage.getItem('csvButtonsEnabled') || 'true') === 'true';
                     this.advancedStatsVisible = (localStorage.getItem('advancedStatsVisible') || 'false') === 'true';
                     this.faultButtonEnabled = (localStorage.getItem('faultButtonEnabled') || 'false') === 'true';
-
-
-                    // --- Initialisation ---
+                    this.useTakeAsThrow = (localStorage.getItem('useTakeAsThrow') || 'true') === 'true';
+                    
                     this.initializeApp();
                     this.bindEvents();
                     this.loadOptions();
                 }
 
                 /**
-                 * Initialise l'application.
+                 * Traduit une clé donnée en utilisant l'objet de traductions.
+                 * @param {string} key - La clé de traduction.
+                 * @param {Object} params - Les paramètres à remplacer dans la chaîne.
+                 * @returns {string} Le texte traduit.
+                 */
+                t(key, params = {}) {
+                    let text = translations[this.language]?.[key] || translations.fr[key] || key;
+                    for (const param in params) {
+                        text = text.replace(`{${param}}`, params[param]);
+                    }
+                    return text;
+                }
+
+                /**
+                 * Met à jour tous les textes de l'interface utilisateur avec la langue actuelle.
+                 */
+                updateAllTexts() {
+                    document.querySelectorAll('[data-i18n-key]').forEach(element => {
+                        const key = element.getAttribute('data-i18n-key');
+                        element.textContent = this.t(key);
+                    });
+                    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                        const key = element.getAttribute('data-i18n-placeholder');
+                        element.placeholder = this.t(key);
+                    });
+                     document.title = this.t('app.title');
+                     document.getElementById('versionDisplay').textContent = this.t('app.version', {version: this.version});
+                     this.updateTakeAsThrowLabel();
+                     this.updateTransitionLabel();
+                }
+
+                /**
+                 * Change la langue de l'application.
+                 * @param {string} lang - Le code de la langue (ex: 'fr', 'en').
+                 */
+                changeLanguage(lang) {
+                    this.language = lang;
+                    localStorage.setItem('language', lang);
+                    document.documentElement.lang = lang;
+                    this.updateAllTexts();
+                }
+
+                /**
+                 * Initialise l'application : applique les thèmes, charge les données, etc.
                  */
                 initializeApp() {
+                    this.changeLanguage(this.language); // Définit la langue initiale et les textes
+                    
                     document.body.setAttribute('data-theme', this.theme);
                     document.body.setAttribute('data-color-theme', this.colorTheme);
-                    
                     const contentEl = document.querySelector('.content');
-                    contentEl.classList.add('no-transition'); // Empêche l'animation au chargement
+                    contentEl.classList.add('no-transition');
                     contentEl.className = `content transition-${this.transitionStyle}`;
                     
-                    document.getElementById('versionDisplay').textContent = `Version ${this.version}`;
                     this.displayColorThemes();
+                    this.setupLanguageSelector();
                     this.loadDogProfiles();
                     this.updateCsvButtonsVisibility();
                     this.updateFaultButtonVisibility();
-
-                    // Réactive les transitions après le premier rendu
                     setTimeout(() => {
                         contentEl.classList.remove('no-transition');
                     }, 100);
                 }
 
                 /**
-                 * Lie tous les événements des éléments du DOM.
+                 * Lie tous les événements des éléments de l'interface utilisateur à leurs fonctions respectives.
                  */
                 bindEvents() {
-                    // Navigation
                     document.getElementById('homeNav').addEventListener('click', () => this.navigateTo('measure'));
                     document.getElementById('historyNav').addEventListener('click', () => this.navigateTo('history'));
                     document.getElementById('optionsNav').addEventListener('click', () => this.navigateTo('options'));
-                    
-                    // Actions de mesure
                     document.getElementById('catchBtn').addEventListener('click', () => this.addAction('C'));
                     document.getElementById('dropBtn').addEventListener('click', () => this.addAction('D'));
                     document.getElementById('takeBtn').addEventListener('click', () => this.addAction('T'));
                     document.getElementById('faultBtn').addEventListener('click', () => this.addAction('F'));
                     document.getElementById('undoBtn').addEventListener('click', () => this.undoAction());
                     document.getElementById('endRunBtn').addEventListener('click', () => this.endRun());
-                    
-                    // Actions sur les résultats
                     document.getElementById('razBtn').addEventListener('click', () => this.confirmResetRun());
                     document.getElementById('saveBtn').addEventListener('click', () => this.showSaveModal());
-
-                    // Actions des modales
                     document.getElementById('closeShareBtn').addEventListener('click', () => this.hideShareModal());
                     document.getElementById('cancelSaveBtn').addEventListener('click', () => this.hideSaveModal());
                     document.getElementById('confirmSaveBtn').addEventListener('click', () => this.saveRun());
@@ -1072,11 +1288,9 @@
                     document.getElementById('confirmUpdateBtn').addEventListener('click', () => this.updateRun());
                     document.getElementById('modalCancel').addEventListener('click', () => this.hideModal());
                     document.getElementById('modalConfirm').addEventListener('click', () => this.confirmModal());
-
-                    // Formulaires et entrées
                     document.getElementById('dogNameInput').addEventListener('input', (e) => this.handleDogNameInput(e));
-                    
-                    // Options
+                    document.getElementById('fullscreenBtn').addEventListener('click', () => this.toggleFullScreen());
+                    document.addEventListener('fullscreenchange', () => this.updateFullscreenButton());
                     document.getElementById('themeToggle').addEventListener('change', () => this.toggleTheme());
                     document.getElementById('transitionToggle').addEventListener('change', () => this.toggleTransition());
                     document.getElementById('hapticToggle').addEventListener('change', () => this.toggleHaptic());
@@ -1084,25 +1298,43 @@
                     document.getElementById('advancedStatsToggle').addEventListener('change', () => this.toggleAdvancedStats());
                     document.getElementById('csvToggle').addEventListener('change', () => this.toggleCsvButtons());
                     document.getElementById('faultButtonToggle').addEventListener('change', () => this.toggleFaultButton());
+                    document.getElementById('takeAsThrowToggle').addEventListener('change', () => this.toggleTakeAsThrow());
                     document.getElementById('seuilInput').addEventListener('change', (e) => this.updateSeuil(e));
                     document.getElementById('purgeBtn').addEventListener('click', () => this.purgeHistory());
                     document.getElementById('addDogBtn').addEventListener('click', () => this.addDogProfile());
                     document.getElementById('backupBtn').addEventListener('click', () => this.exportData());
                     document.getElementById('restoreInput').addEventListener('change', (e) => this.importData(e));
-                    
-                    // Historique
                     document.getElementById('searchInput').addEventListener('input', () => this.filterAndSortHistory());
                     document.getElementById('exportBtn').addEventListener('click', () => this.exportCSV());
                     document.getElementById('importCsvInput').addEventListener('change', (e) => this.handleCsvImport(e));
                     document.querySelectorAll('.sort-button').forEach(btn => btn.addEventListener('click', (e) => this.sortHistory(e.target.dataset.sort)));
+
+                    // Événements pour le sélecteur de langue personnalisé
+                    document.getElementById('selectedLanguage').addEventListener('click', () => {
+                        document.getElementById('languageOptions').classList.toggle('select-hide');
+                    });
+
+                    window.addEventListener('click', (e) => {
+                        const container = document.getElementById('languageSelectorContainer');
+                        if (container && !container.contains(e.target)) {
+                            document.getElementById('languageOptions').classList.add('select-hide');
+                        }
+                    });
                 }
 
+                /**
+                 * Fait vibrer l'appareil si l'option est activée.
+                 * @param {number|number[]} pattern - Le modèle de vibration.
+                 */
                 vibrate(pattern = 50) {
                     if (this.hapticEnabled && window.navigator.vibrate) {
                         window.navigator.vibrate(pattern);
                     }
                 }
 
+                /**
+                 * Affiche les options de thème de couleur dans l'interface.
+                 */
                 displayColorThemes() {
                     const container = document.getElementById('colorThemeSelector');
                     container.innerHTML = '';
@@ -1120,6 +1352,10 @@
                     });
                 }
                 
+                /**
+                 * Met à jour le thème de couleur de l'application.
+                 * @param {string} themeName - Le nom du thème à appliquer.
+                 */
                 updateColorTheme(themeName) {
                     this.colorTheme = themeName;
                     document.body.setAttribute('data-color-theme', this.colorTheme);
@@ -1129,6 +1365,9 @@
                     });
                 }
 
+                /**
+                 * Charge les profils de chiens depuis le localStorage.
+                 */
                 loadDogProfiles() {
                     const profiles = localStorage.getItem('discDogProfiles');
                     if (profiles) {
@@ -1141,32 +1380,37 @@
                     }
                 }
 
+                /**
+                 * Sauvegarde les profils de chiens dans le localStorage.
+                 */
                 saveDogProfiles() {
                     localStorage.setItem('discDogProfiles', JSON.stringify(this.dogProfiles));
                 }
 
+                /**
+                 * Affiche les profils de chiens dans l'interface des options.
+                 */
                 displayDogProfiles() {
                     const list = document.getElementById('dogProfilesList');
                     list.innerHTML = '';
                     if (this.dogProfiles.length === 0) {
-                        list.innerHTML = '<p style="text-align:center;color:#999;padding:10px 0;">Aucun profil.</p>';
+                        list.innerHTML = `<p style="text-align:center;color:#999;padding:10px 0;">${this.t('options.no_profiles')}</p>`;
                         return;
                     }
                     this.dogProfiles.sort((a, b) => a.name.localeCompare(b.name)).forEach(dog => {
                         const item = document.createElement('div');
                         item.className = 'dog-profile-item';
-                        item.innerHTML = `
-                            <span class="dog-profile-name">${dog.name}</span>
-                            <div class="dog-profile-actions">
-                                <button class="history-action-btn rename-dog-btn" title="Renommer"><span class="material-icons">edit</span></button>
-                                <button class="history-action-btn delete-dog-btn" title="Supprimer"><span class="material-icons">delete</span></button>
-                            </div>`;
+                        item.innerHTML = `<span class="dog-profile-name">${dog.name}</span><div class="dog-profile-actions"><button class="history-action-btn rename-dog-btn" title="Renommer"><span class="material-icons">edit</span></button><button class="history-action-btn delete-dog-btn" title="Supprimer"><span class="material-icons">delete</span></button></div>`;
                         item.querySelector('.rename-dog-btn').addEventListener('click', () => this.renameDogProfile(dog.id, dog.name));
                         item.querySelector('.delete-dog-btn').addEventListener('click', () => this.confirmDeleteDogProfile(dog.id, dog.name));
                         list.appendChild(item);
                     });
                 }
 
+                /**
+                 * Ajoute un nouveau profil de chien.
+                 * @param {string|null} name - Le nom du chien à ajouter.
+                 */
                 addDogProfile(name = null) {
                     const input = document.getElementById('newDogNameInput');
                     const newName = (name || input.value).trim();
@@ -1178,21 +1422,31 @@
                     }
                 }
 
+                /**
+                 * Affiche une modale de confirmation avant de supprimer un profil de chien.
+                 * @param {number} dogId - L'ID du chien à supprimer.
+                 * @param {string} dogName - Le nom du chien.
+                 */
                 confirmDeleteDogProfile(dogId, dogName) {
                     const runsCount = JSON.parse(localStorage.getItem('discDogHistory') || '[]').filter(run => run.dogName.toLowerCase() === dogName.toLowerCase()).length;
-                    let message = `Vraiment supprimer "${dogName}" ?`;
+                    let message = this.t('modal.confirm_delete_dog_message', {dogName: dogName});
                     if (runsCount > 0) {
-                        message += ` ${runsCount} run(s) associé(s) ne seront PAS supprimés.`;
+                        message += this.t('modal.confirm_delete_dog_associated_runs', {runsCount: runsCount});
                     }
-                    this.showModal('Vraiment supprimer ce profil ?', () => {
+                    this.showModal(message, () => {
                         this.dogProfiles = this.dogProfiles.filter(dog => dog.id !== dogId);
                         this.saveDogProfiles();
                         this.displayDogProfiles();
                     });
                 }
 
+                /**
+                 * Renomme un profil de chien.
+                 * @param {number} dogId - L'ID du chien à renommer.
+                 * @param {string} oldName - L'ancien nom du chien.
+                 */
                 renameDogProfile(dogId, oldName) {
-                    const newNamePrompt = prompt(`Renommer "${oldName}" :`, oldName);
+                    const newNamePrompt = prompt(this.t('options.rename_dog_prompt', {oldName: oldName}), oldName);
                     if (newNamePrompt && newNamePrompt.trim() && newNamePrompt.trim() !== oldName) {
                         const newName = newNamePrompt.trim();
                         const dog = this.dogProfiles.find(d => d.id === dogId);
@@ -1206,11 +1460,15 @@
                     }
                 }
                 
+                /**
+                 * Gère la navigation entre les différentes vues de l'application.
+                 * @param {string} view - L'ID de la vue à afficher.
+                 */
                 navigateTo(view) {
                     if (this.needsConfirmation() && view !== this.currentView) {
                         let message = this.isRunning ? 
-                            'Un run est en cours. Si vous quittez, il sera annulé.' : 
-                            'Le run n\'a pas été sauvegardé. Voulez-vous quitter sans sauvegarder ?';
+                            this.t('modal.confirm_exit_run_in_progress') : 
+                            this.t('modal.confirm_exit_unsaved_run');
                         this.showModal(message, () => {
                             this.resetRun(false);
                             this.showView(view);
@@ -1220,37 +1478,46 @@
                     this.showView(view);
                 }
 
+                /**
+                 * Vérifie si une confirmation est nécessaire avant de changer de vue.
+                 * @returns {boolean}
+                 */
                 needsConfirmation() {
                     return this.isRunning || (this.isRunCompleted && !this.isRunSaved);
                 }
 
+                /**
+                 * Affiche une vue spécifique et gère la transition.
+                 * @param {string} viewId - L'ID de la vue à afficher.
+                 */
                 showView(viewId) {
                     const currentViewEl = document.querySelector('.view.active');
                     const nextViewEl = document.getElementById(viewId + 'View');
-
                     if (!nextViewEl || (currentViewEl === nextViewEl && this.currentView === viewId)) {
                         return;
                     }
-
                     document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
                     const navMap = { measure: 'homeNav', results: 'homeNav', history: 'historyNav', options: 'optionsNav' };
                     const activeNav = document.getElementById(navMap[viewId] || 'homeNav');
                     if (activeNav) activeNav.classList.add('active');
-
                     this.currentView = viewId;
-
                     if (currentViewEl) {
                         currentViewEl.classList.remove('active');
                         currentViewEl.classList.add('view-exit');
                     }
-
                     nextViewEl.classList.remove('view-exit');
                     nextViewEl.classList.add('active');
-                    
                     if (viewId === 'history') this.loadHistory();
-                    if (viewId === 'options') this.displayDogProfiles();
+                    if (viewId === 'options') {
+                        this.displayDogProfiles();
+                        this.updateFullscreenButton();
+                    }
                 }
-
+                
+                /**
+                 * Ajoute une action (Catch, Drop, etc.) à l'historique du run.
+                 * @param {string} type - Le type d'action ('C', 'D', 'T', 'F').
+                 */
                 addAction(type) {
                     this.vibrate();
                     if (!this.isRunning && this.elapsedTime === 0) {
@@ -1261,6 +1528,9 @@
                     this.updateLiveTimeline();
                 }
 
+                /**
+                 * Annule la dernière action effectuée.
+                 */
                 undoAction() {
                     this.vibrate();
                     if (!this.isRunning && this.isRunCompleted) {
@@ -1268,8 +1538,8 @@
                         this.isRunSaved = false;
                         this.startTimer();
                         this.enableCountingButtons();
-                        document.getElementById('endRunBtn').textContent = 'Fin du Run';
-                        document.getElementById('undoBtn').textContent = 'UNDO';
+                        document.getElementById('endRunBtn').textContent = this.t('measure.button_end_run');
+                        document.getElementById('undoBtn').textContent = this.t('measure.button_undo');
                         return;
                     }
                     if (this.actionHistory.length === 0) return;
@@ -1278,6 +1548,9 @@
                     this.updateLiveTimeline();
                 }
                 
+                /**
+                 * Démarre le chronomètre.
+                 */
                 startTimer() {
                     this.isRunning = true;
                     this.startTime = Date.now() - this.elapsedTime;
@@ -1288,19 +1561,24 @@
                     }, 100);
                 }
 
+                /**
+                 * Arrête le chronomètre.
+                 */
                 stopTimer() {
                     this.isRunning = false;
                     clearInterval(this.timerInterval);
                     this.timerInterval = null;
                 }
 
+                /**
+                 * Met à jour l'affichage du chronomètre.
+                 */
                 updateTimer() {
                     const totalSeconds = Math.floor(this.elapsedTime / 1000);
                     const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
                     const seconds = String(totalSeconds % 60).padStart(2, '0');
                     const timerEl = document.getElementById('timer');
                     timerEl.textContent = `${minutes}:${seconds}`;
-
                     timerEl.className = 'timer running';
                     if (totalSeconds <= 80) timerEl.classList.add('green');
                     else if (totalSeconds <= 105) timerEl.classList.add('yellow');
@@ -1308,6 +1586,9 @@
                     else timerEl.classList.add('critical');
                 }
 
+                /**
+                 * Termine le run en cours ou affiche les résultats si le run est déjà terminé.
+                 */
                 endRun() {
                     if (this.isRunCompleted) {
                         this.showResults();
@@ -1319,57 +1600,92 @@
                     this.isRunSaved = false;
                     this.disableCountingButtons();
                     document.getElementById('timer').classList.remove('running');
-                    document.getElementById('endRunBtn').textContent = 'RESULTS';
-                    document.getElementById('undoBtn').textContent = 'Retour au Run';
+                    document.getElementById('endRunBtn').textContent = this.t('measure.button_results');
+                    document.getElementById('undoBtn').textContent = this.t('measure.button_back_to_run');
                 }
 
+                /**
+                 * Active les boutons de comptage.
+                 */
                 enableCountingButtons() {
                     ['catchBtn', 'dropBtn', 'takeBtn', 'faultBtn'].forEach(id => document.getElementById(id).disabled = false);
                 }
                 
+                /**
+                 * Désactive les boutons de comptage.
+                 */
                 disableCountingButtons() {
                     ['catchBtn', 'dropBtn', 'takeBtn', 'faultBtn'].forEach(id => document.getElementById(id).disabled = true);
                 }
                 
+                /**
+                 * Calcule et affiche les résultats du run.
+                 */
                 showResults() {
                     const runStats = this.getRunStats();
-                    const score = this.calculateScore(runStats.catches + runStats.takes, runStats.totalThrows);
-                    
-                    let mainSummary = `Catch Ratio : ${score.toFixed(1)} / ${runStats.totalThrows} lancés`;
-                    if(this.seuilMinimum > 0 && runStats.totalThrows < this.seuilMinimum) mainSummary += ` (Seuil: ${this.seuilMinimum})`;
+                    const score = this.calculateScore(runStats);
+                    let mainSummary = this.t('results.score_summary', {score: score.toFixed(1), totalThrows: runStats.totalThrows});
+                    if(this.seuilMinimum > 0 && runStats.totalThrows < this.seuilMinimum) mainSummary += this.t('results.seuil_info', {seuilMinimum: this.seuilMinimum});
                     document.getElementById('scoreSummary').textContent = mainSummary;
+                    const compactTakesEl = document.getElementById('compactTakes');
+                    compactTakesEl.innerHTML = `<span class="stat-letter-t">T</span> ${this.t('results.takes_label', {takes: runStats.takes})}`;
+                    if (this.useTakeAsThrow) {
+                        compactTakesEl.style.opacity = 1;
+                        compactTakesEl.firstElementChild.textContent = 'T';
+                    } else {
+                        compactTakesEl.innerHTML = `(<span class="stat-letter-t">T</span> ${this.t('results.takes_label', {takes: runStats.takes})})`;
+                        compactTakesEl.style.opacity = 0.6;
+                    }
 
-                    // Mise à jour de la nouvelle structure compacte
-                    document.getElementById('compactCatches').innerHTML = `<span class="stat-letter-c">C</span> ${runStats.catches} Catches`;
-                    document.getElementById('compactTakes').innerHTML = `<span class="stat-letter-t">T</span> ${runStats.takes} Takes`;
-                    document.getElementById('compactDrops').innerHTML = `<span class="stat-letter-d">D</span> ${runStats.drops} Drops`;
-
+                    document.getElementById('compactCatches').innerHTML = `<span class="stat-letter-c">C</span> ${this.t('results.catches_label', {catches: runStats.catches})}`;
+                    document.getElementById('compactDrops').innerHTML = `<span class="stat-letter-d">D</span> ${this.t('results.drops_label', {drops: runStats.drops})}`;
                     const totalSeconds = Math.floor(this.elapsedTime / 1000);
                     const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
                     const seconds = String(totalSeconds % 60).padStart(2, '0');
                     document.getElementById('compactTime').textContent = `${minutes}:${seconds}`;
-                    
                     this.displayTimelineForResults();
                     this.showView('results');
                 }
 
-                getRunStats() {
-                    const stats = { catches: 0, drops: 0, takes: 0, faults: 0 };
-                    this.actionHistory.forEach(action => {
+                /**
+                 * Calcule les statistiques d'un run à partir de son historique d'actions.
+                 * @param {Array} actions - L'historique des actions.
+                 * @param {boolean} useTakeAsThrow - Indique si les "takes" comptent comme des lancés.
+                 * @returns {Object} Les statistiques du run.
+                 */
+                getRunStats(actions = this.actionHistory, useTakeAsThrow = this.useTakeAsThrow) {
+                    const stats = { catches: 0, drops: 0, takes: 0, faults: 0, totalThrows: 0, successes: 0 };
+                    actions.forEach(action => {
                         if (action.type === 'C') stats.catches++;
                         else if (action.type === 'D') stats.drops++;
                         else if (action.type === 'T') stats.takes++;
                         else if (action.type === 'F') stats.faults++;
                     });
-                    stats.totalThrows = this.actionHistory.filter(a => a.type !== 'F').length;
+
+                    if (useTakeAsThrow) {
+                        stats.totalThrows = stats.catches + stats.drops + stats.takes;
+                        stats.successes = stats.catches + stats.takes;
+                    } else {
+                        stats.totalThrows = stats.catches + stats.drops;
+                        stats.successes = stats.catches;
+                    }
                     return stats;
                 }
 
-                calculateScore(success, total) {
-                    const divisor = total < this.seuilMinimum ? this.seuilMinimum : total;
-                    return divisor === 0 ? 0 : (success / divisor) * 10;
+                /**
+                 * Calcule le score final du run.
+                 * @param {Object} runStats - Les statistiques du run.
+                 * @returns {number} Le score calculé.
+                 */
+                calculateScore(runStats) {
+                    const { successes, totalThrows } = runStats;
+                    const divisor = totalThrows < this.seuilMinimum ? this.seuilMinimum : totalThrows;
+                    return divisor === 0 ? 0 : (successes / divisor) * 10;
                 }
 
+                /**
+                 * Affiche la timeline des actions dans la vue des résultats.
+                 */
                 displayTimelineForResults() {
                     const timelineContainer = document.getElementById('timeline');
                     timelineContainer.innerHTML = '';
@@ -1382,10 +1698,17 @@
                     });
                 }
                 
+                /**
+                 * Affiche une modale de confirmation avant de réinitialiser le run.
+                 */
                 confirmResetRun() {
-                    this.showModal('Vraiment réinitialiser ce run ?', () => this.resetRun(true));
+                    this.showModal(this.t('modal.confirm_reset_run'), () => this.resetRun(true));
                 }
                 
+                /**
+                 * Réinitialise l'état du run en cours.
+                 * @param {boolean} navigateToMeasure - Indique s'il faut retourner à la vue de mesure.
+                 */
                 resetRun(navigateToMeasure = true) {
                     this.stopTimer();
                     this.actionHistory = [];
@@ -1394,10 +1717,9 @@
                     this.isRunCompleted = false;
                     this.isRunSaved = false;
                     this.lastRunData = null;
-                    
                     this.enableCountingButtons();
-                    document.getElementById('endRunBtn').textContent = 'Fin du Run';
-                    document.getElementById('undoBtn').textContent = 'UNDO';
+                    document.getElementById('endRunBtn').textContent = this.t('measure.button_end_run');
+                    document.getElementById('undoBtn').textContent = this.t('measure.button_undo');
                     document.getElementById('timer').textContent = '00:00';
                     document.getElementById('timer').className = 'timer';
                     this.updateDisplay();
@@ -1407,15 +1729,21 @@
                     }
                 }
 
+                /**
+                 * Met à jour l'affichage des statistiques en direct (nombre total de lancés).
+                 */
                 updateDisplay() {
                     const stats = this.getRunStats();
                     document.getElementById('totalThrows').textContent = stats.totalThrows;
                 }
 
+                /**
+                 * Met à jour la timeline en direct pendant le run.
+                 */
                 updateLiveTimeline() {
                     const timelineContainer = document.getElementById('liveTimeline');
                     if (this.actionHistory.length === 0) {
-                        timelineContainer.innerHTML = '<span style="color:#999;font-style:italic;">Aucun lancer...</span>';
+                        timelineContainer.innerHTML = `<span style="color:#999;font-style:italic;">${this.t('measure.no_throws')}</span>`;
                         return;
                     }
                     timelineContainer.innerHTML = '';
@@ -1428,6 +1756,9 @@
                     });
                 }
                 
+                /**
+                 * Affiche la modale de sauvegarde.
+                 */
                 showSaveModal() {
                     const modal = document.getElementById('saveModal');
                     modal.style.display = 'block';
@@ -1435,12 +1766,19 @@
                     document.getElementById('dogNameInput').focus();
                 }
 
+                /**
+                 * Cache la modale de sauvegarde.
+                 */
                 hideSaveModal() {
                     const modal = document.getElementById('saveModal');
                     modal.classList.remove('visible');
                     setTimeout(() => modal.style.display = 'none', 300);
                 }
 
+                /**
+                 * Affiche la modale d'édition pour un run spécifique.
+                 * @param {number} runId - L'ID du run à éditer.
+                 */
                 showEditModal(runId) {
                     const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
                     const run = history.find(r => r.id === runId);
@@ -1454,6 +1792,9 @@
                     }
                 }
 
+                /**
+                 * Cache la modale d'édition.
+                 */
                 hideEditModal() {
                     const modal = document.getElementById('editModal');
                     modal.classList.remove('visible');
@@ -1461,16 +1802,29 @@
                     this.editingRunId = null;
                 }
 
+                /**
+                 * Gère la saisie dans le champ du nom du chien (pour les suggestions).
+                 * @param {Event} e - L'événement d'input.
+                 */
                 handleDogNameInput(e) {
                     const query = e.target.value;
                     this.showSuggestions(query.length >= 2 ? this.findDogNameSuggestions(query) : []);
                     this.updateTagPreview(query);
                 }
 
+                /**
+                 * Trouve des suggestions de noms de chiens basées sur la saisie.
+                 * @param {string} query - La chaîne de recherche.
+                 * @returns {Array} Une liste de profils de chiens correspondants.
+                 */
                 findDogNameSuggestions(query) {
                     return this.dogProfiles.filter(profile => profile.name.toLowerCase().includes(query.toLowerCase()));
                 }
 
+                /**
+                 * Affiche les suggestions de noms de chiens.
+                 * @param {Array} suggestions - La liste des suggestions à afficher.
+                 */
                 showSuggestions(suggestions) {
                     const suggestionsBox = document.getElementById('suggestions');
                     suggestionsBox.innerHTML = '';
@@ -1488,20 +1842,32 @@
                     suggestionsBox.style.display = suggestions.length > 0 ? 'block' : 'none';
                 }
                 
+                /**
+                 * Met à jour l'aperçu du tag du run (ex: #Run1).
+                 * @param {string} name - Le nom du chien.
+                 */
                 updateTagPreview(name) {
                     const previewEl = document.getElementById('tagPreview');
-                    previewEl.textContent = name.trim() ? `Sera sauvegardé comme : #Run${this.getNextRunNumber(name)}` : '';
+                    previewEl.textContent = name.trim() ? this.t('modal.tag_preview', {runNumber: this.getNextRunNumber(name)}) : '';
                 }
 
+                /**
+                 * Obtient le numéro du prochain run pour un chien donné.
+                 * @param {string} dogName - Le nom du chien.
+                 * @returns {number} Le numéro du prochain run.
+                 */
                 getNextRunNumber(dogName) {
                     const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
                     return history.filter(run => run.dogName.toLowerCase() === dogName.toLowerCase()).length + 1;
                 }
 
+                /**
+                 * Sauvegarde le run terminé dans l'historique.
+                 */
                 saveRun() {
                     const dogName = document.getElementById('dogNameInput').value.trim();
                     if (!dogName) {
-                        alert('Veuillez entrer le nom du chien');
+                        alert(this.t('modal.error_enter_dog_name'));
                         return;
                     }
                     if (!this.dogProfiles.some(profile => profile.name.toLowerCase() === dogName.toLowerCase())) {
@@ -1510,7 +1876,8 @@
 
                     const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
                     const runStats = this.getRunStats();
-                    const advancedStats = this.calculateAdvancedStats(this.actionHistory, this.elapsedTime);
+                    const score = this.calculateScore(runStats);
+                    const advancedStats = this.calculateAdvancedStats(this.actionHistory, this.elapsedTime, this.useTakeAsThrow);
 
                     const newRun = {
                         id: Date.now(),
@@ -1518,7 +1885,7 @@
                         runTag: `#Run${this.getNextRunNumber(dogName)}`,
                         date: (new Date()).toLocaleDateString('fr-FR'),
                         time: (new Date()).toLocaleTimeString('fr-FR'),
-                        score: this.calculateScore(runStats.catches + runStats.takes, runStats.totalThrows),
+                        score: score,
                         totalThrows: runStats.totalThrows,
                         catches: runStats.catches,
                         drops: runStats.drops,
@@ -1526,6 +1893,7 @@
                         faults: runStats.faults,
                         elapsedTime: this.elapsedTime,
                         seuilMinimum: this.seuilMinimum,
+                        useTakeAsThrow: this.useTakeAsThrow,
                         actionHistory: this.actionHistory,
                         advancedStats: advancedStats,
                         notes: document.getElementById('notesInput').value.trim(),
@@ -1537,6 +1905,9 @@
                     this.resetRun();
                 }
 
+                /**
+                 * Met à jour les informations d'un run existant dans l'historique.
+                 */
                 updateRun() {
                     const history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
                     const runIndex = history.findIndex(run => run.id === this.editingRunId);
@@ -1549,10 +1920,18 @@
                     }
                 }
 
+                /**
+                 * Affiche une confirmation avant de supprimer un run.
+                 * @param {number} runId - L'ID du run à supprimer.
+                 */
                 confirmDeleteRun(runId) {
-                    this.showModal('Vraiment supprimer ce run ?', () => this.deleteRun(runId));
+                    this.showModal(this.t('modal.confirm_delete_run'), () => this.deleteRun(runId));
                 }
 
+                /**
+                 * Supprime un run de l'historique.
+                 * @param {number} runId - L'ID du run à supprimer.
+                 */
                 deleteRun(runId) {
                     let history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
                     let updatedHistory = history.filter(run => run.id !== runId);
@@ -1560,15 +1939,22 @@
                     this.loadHistory();
                 }
                 
+                /**
+                 * Charge l'historique des runs.
+                 */
                 loadHistory() {
                     this.filterAndSortHistory();
                 }
 
+                /**
+                 * Affiche l'historique des runs dans l'interface.
+                 * @param {Array} runs - La liste des runs à afficher.
+                 */
                 displayHistory(runs) {
                     const list = document.getElementById('historyList');
                     list.innerHTML = '';
                     if (runs.length === 0) {
-                        list.innerHTML = '<p style="text-align:center;color:#999;padding:20px 0;">Aucun run correspondant.</p>';
+                        list.innerHTML = `<p style="text-align:center;color:#999;padding:20px 0;">${this.t('history.no_runs_found')}</p>`;
                         return;
                     }
                     
@@ -1578,9 +1964,11 @@
                         const totalSeconds = Math.floor((run.elapsedTime || 0) / 1000);
                         const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
                         const seconds = String(totalSeconds % 60).padStart(2, '0');
-                
+                        const score = run.score || 0; 
+                        const totalThrows = run.totalThrows || 0;
+
                         if (!run.advancedStats && run.actionHistory) {
-                            run.advancedStats = this.calculateAdvancedStats(run.actionHistory, run.elapsedTime);
+                            run.advancedStats = this.calculateAdvancedStats(run.actionHistory, run.elapsedTime, run.useTakeAsThrow);
                         }
                         const stats = run.advancedStats || { startRatio: -1, endRatio: -1, bestStreak: 0, bestStreakSequence: [], consistency: { firstHalf: -1, secondHalf: -1 } };
 
@@ -1596,31 +1984,31 @@
                                 </div>
                             </div>
                             <div class="history-details">
-                                <div><strong>Date:</strong> ${run.date}</div>
-                                <div><strong>Heure:</strong> ${run.time}</div>
-                                <div><strong>Temps:</strong> ${minutes}:${seconds}</div>
-                                <div><strong>Catch Ratio:</strong> <span class="history-score">${run.score.toFixed(1)}</span></div>
-                                <div><strong>Lancés:</strong> ${run.totalThrows}${run.totalThrows < run.seuilMinimum ? ` (S${run.seuilMinimum})` : ''}</div>
-                                <div><strong>Catches:</strong> ${run.catches}</div>
-                                <div><strong>Drops:</strong> ${run.drops}</div>
-                                <div><strong>Takes:</strong> ${run.takes}</div>
+                                <div><strong>${this.t('history.item_date_label')}</strong> ${run.date}</div>
+                                <div><strong>${this.t('history.item_time_label')}</strong> ${run.time}</div>
+                                <div><strong>${this.t('history.item_duration_label')}</strong> ${minutes}:${seconds}</div>
+                                <div><strong>${this.t('history.item_ratio_label')}</strong> <span class="history-score">${score.toFixed(1)}</span></div>
+                                <div><strong>${this.t('history.item_throws_label')}</strong> ${totalThrows}${totalThrows < run.seuilMinimum ? ` (S${run.seuilMinimum})` : ''}</div>
+                                <div><strong>${this.t('history.item_catches_label')}</strong> ${run.catches}</div>
+                                <div><strong>${this.t('history.item_drops_label')}</strong> ${run.drops}</div>
+                                <div><strong>${this.t('history.item_takes_label')}</strong> ${run.takes}</div>
                             </div>
                             <div class="advanced-stats-container" style="display: ${this.advancedStatsVisible ? 'block' : 'none'};">
-                                <div class="advanced-stats-title">Statistiques Avancées</div>
+                                <div class="advanced-stats-title">${this.t('history.advanced_stats_title')}</div>
                                 <div class="advanced-stat">
-                                    <span class="stat-label">Ratio Début (30s)</span>
+                                    <span class="stat-label">${this.t('history.adv_start_ratio_label')}</span>
                                     <span class="stat-value">${stats.startRatio === -1 ? 'N/A' : `${stats.startRatio.toFixed(1)}`}</span>
                                 </div>
                                 <div class="advanced-stat">
-                                    <span class="stat-label">Ratio Fin (30s)</span>
+                                    <span class="stat-label">${this.t('history.adv_end_ratio_label')}</span>
                                     <span class="stat-value">${stats.endRatio === -1 ? 'N/A' : `${stats.endRatio.toFixed(1)}`}</span>
                                 </div>
                                 <div class="advanced-stat">
-                                    <span class="stat-label">Meilleure Série</span>
+                                    <span class="stat-label">${this.t('history.adv_best_streak_label')}</span>
                                     <span class="stat-value">${stats.bestStreak}</span>
                                 </div>
                                 <div class="advanced-stat">
-                                    <span class="stat-label">Consistance</span>
+                                    <span class="stat-label">${this.t('history.adv_consistency_label')}</span>
                                     <span class="stat-value">${stats.consistency.firstHalf === -1 ? 'N/A' : `${stats.consistency.firstHalf.toFixed(1)} &rarr; ${stats.consistency.secondHalf.toFixed(1)}`}</span>
                                 </div>
                             </div>
@@ -1634,18 +2022,24 @@
                     });
                 }
                 
+                /**
+                 * Change le critère de tri de l'historique.
+                 * @param {string} sortBy - Le critère de tri ('date', 'name', 'score').
+                 */
                 sortHistory(sortBy) {
                     document.querySelectorAll('.sort-button').forEach(btn => btn.classList.remove('active'));
                     document.querySelector(`.sort-button[data-sort="${sortBy}"]`)?.classList.add('active');
                     this.filterAndSortHistory();
                 }
 
+                /**
+                 * Filtre et trie l'historique en fonction de la recherche et du critère de tri actif.
+                 */
                 filterAndSortHistory() {
                     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
                     const activeSort = document.querySelector('.sort-button.active')?.dataset.sort || 'date';
                     let runs = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
 
-                    // 1. Filtrer par terme de recherche
                     if (searchTerm) {
                         runs = runs.filter(run => 
                             run.dogName.toLowerCase().includes(searchTerm) ||
@@ -1653,7 +2047,6 @@
                         );
                     }
 
-                    // 2. Trier les résultats filtrés
                     const sortFunctions = {
                         'name': (a, b) => a.dogName.localeCompare(b.dogName),
                         'score': (a, b) => b.score - a.score,
@@ -1664,18 +2057,29 @@
                     this.displayHistory(runs);
                 }
 
-                calculateAdvancedStats(actions, totalTime) {
+                /**
+                 * Calcule les statistiques avancées pour un run.
+                 * @param {Array} actions - L'historique des actions du run.
+                 * @param {number} totalTime - La durée totale du run.
+                 * @param {boolean} useTakeAsThrowRule - Indique si les "takes" comptent comme des lancés.
+                 * @returns {Object} Un objet contenant les statistiques avancées.
+                 */
+                calculateAdvancedStats(actions, totalTime, useTakeAsThrowRule) {
                     if (!actions || actions.length === 0) {
                         return { startRatio: -1, endRatio: -1, bestStreak: 0, bestStreakSequence: [], consistency: { firstHalf: -1, secondHalf: -1 } };
                     }
+                    
+                    const getSuccessRatio = (actionSubset) => {
+                        if(actionSubset.length === 0) return -1;
+                        const successes = actionSubset.filter(a => a.type === 'C' || a.type === 'T').length;
+                        return (successes / actionSubset.length) * 10;
+                    };
 
                     const startActions = actions.filter(a => a.time <= 30000);
-                    const startSuccess = startActions.filter(a => a.type === 'C' || a.type === 'T').length;
-                    const startRatio = startActions.length > 0 ? (startSuccess / startActions.length) * 10 : -1;
+                    const startRatio = getSuccessRatio(startActions);
 
                     const endActions = actions.filter(a => a.time > (totalTime - 30000));
-                    const endSuccess = endActions.filter(a => a.type === 'C' || a.type === 'T').length;
-                    const endRatio = endActions.length > 0 ? (endSuccess / endActions.length) * 10 : -1;
+                    const endRatio = getSuccessRatio(endActions);
 
                     let bestStreak = 0;
                     let currentStreak = 0;
@@ -1702,87 +2106,165 @@
                     const midPoint = Math.floor(actions.length / 2);
                     const firstHalfActions = actions.slice(0, midPoint);
                     const secondHalfActions = actions.slice(midPoint);
-                    const firstHalfSuccess = firstHalfActions.filter(a => a.type === 'C' || a.type === 'T').length;
-                    const firstHalfRatio = firstHalfActions.length > 0 ? (firstHalfSuccess / firstHalfActions.length) * 10 : -1;
-                    const secondHalfSuccess = secondHalfActions.filter(a => a.type === 'C' || a.type === 'T').length;
-                    const secondHalfRatio = secondHalfActions.length > 0 ? (secondHalfSuccess / secondHalfActions.length) * 10 : -1;
+                    const firstHalfRatio = getSuccessRatio(firstHalfActions);
+                    const secondHalfRatio = getSuccessRatio(secondHalfActions);
                     
                     return { startRatio, endRatio, bestStreak, bestStreakSequence, consistency: { firstHalf: firstHalfRatio, secondHalf: secondHalfRatio } };
                 }
 
+                /**
+                 * Charge les options de l'utilisateur depuis le localStorage et met à jour l'interface.
+                 */
                 loadOptions() {
                     document.getElementById('themeToggle').checked = this.theme === 'dark';
-                    document.getElementById('themeLabel').textContent = this.theme === 'dark' ? 'Sombre' : 'Clair';
-                    
                     document.getElementById('transitionToggle').checked = this.transitionStyle === 'vertical';
-                    document.getElementById('transitionLabel').textContent = this.transitionStyle === 'vertical' ? 'Verticale' : 'Horizontale';
-                    
                     document.getElementById('hapticToggle').checked = this.hapticEnabled;
                     document.getElementById('shareToggle').checked = this.shareEnabled;
                     document.getElementById('advancedStatsToggle').checked = this.advancedStatsVisible;
                     document.getElementById('csvToggle').checked = this.csvButtonsEnabled;
-                    document.getElementById('csvLabel').textContent = this.csvButtonsEnabled ? 'Activé' : 'Désactivé';
-                    
                     document.getElementById('faultButtonToggle').checked = this.faultButtonEnabled;
-                    document.getElementById('faultButtonLabel').textContent = this.faultButtonEnabled ? 'Activé' : 'Désactivé';
-
+                    document.getElementById('takeAsThrowToggle').checked = this.useTakeAsThrow;
+                    
+                    this.updateTakeAsThrowLabel();
+                    this.updateTransitionLabel();
+                    
                     document.getElementById('seuilInput').value = this.seuilMinimum;
                     this.updateColorTheme(this.colorTheme);
                 }
+                
+                /**
+                 * Met à jour le libellé pour l'option "take as throw".
+                 */
+                updateTakeAsThrowLabel() {
+                    const label = document.getElementById('takeAsThrowLabel');
+                    label.textContent = this.useTakeAsThrow ? this.t('options.take_as_throw_yes') : this.t('options.take_as_throw_no');
+                }
+                
+                /**
+                 * Met à jour le libellé pour l'option de transition.
+                 */
+                updateTransitionLabel() {
+                    const label = document.getElementById('transitionLabel');
+                    label.textContent = this.transitionStyle === 'vertical' ? this.t('options.transition_vertical') : this.t('options.transition_horizontal');
+                }
 
+                /**
+                 * Bascule entre le thème clair et le thème sombre.
+                 */
                 toggleTheme() {
                     this.theme = this.theme === 'light' ? 'dark' : 'light';
                     document.body.setAttribute('data-theme', this.theme);
                     localStorage.setItem('theme', this.theme);
-                    document.getElementById('themeLabel').textContent = this.theme === 'dark' ? 'Sombre' : 'Clair';
                 }
 
+                /**
+                 * Bascule entre les styles de transition (horizontal/vertical).
+                 */
                 toggleTransition() {
                     this.transitionStyle = this.transitionStyle === 'horizontal' ? 'vertical' : 'horizontal';
                     localStorage.setItem('transitionStyle', this.transitionStyle);
-                    document.getElementById('transitionLabel').textContent = this.transitionStyle === 'vertical' ? 'Verticale' : 'Horizontale';
                     const contentEl = document.querySelector('.content');
                     contentEl.className = 'content'; // Reset classes
                     contentEl.classList.add(`transition-${this.transitionStyle}`);
+                    this.updateTransitionLabel();
                 }
                 
+                /**
+                 * Bascule le mode plein écran.
+                 */
+                toggleFullScreen() {
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen().catch(err => {
+                            alert(`Erreur lors du passage en plein écran: ${err.message} (${err.name})`);
+                        });
+                    } else {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        }
+                    }
+                }
+
+                /**
+                 * Met à jour l'icône du bouton plein écran en fonction de l'état actuel.
+                 */
+                updateFullscreenButton() {
+                    const fullscreenBtn = document.getElementById('fullscreenBtn');
+                    if (fullscreenBtn) {
+                         if (document.fullscreenElement) {
+                            fullscreenBtn.innerHTML = '<span class="material-icons">fullscreen_exit</span>';
+                            document.body.classList.add('fullscreen-active');
+                         } else {
+                            fullscreenBtn.innerHTML = '<span class="material-icons">fullscreen</span>';
+                            document.body.classList.remove('fullscreen-active');
+                         }
+                    }
+                }
+                
+                /**
+                 * Active/désactive le retour haptique.
+                 */
                 toggleHaptic() {
                     this.hapticEnabled = !this.hapticEnabled;
                     localStorage.setItem('hapticEnabled', String(this.hapticEnabled));
                 }
                 
+                /**
+                 * Active/désactive la fonctionnalité de partage.
+                 */
                 toggleShare() {
                     this.shareEnabled = !this.shareEnabled;
                     localStorage.setItem('shareEnabled', String(this.shareEnabled));
                 }
 
+                /**
+                 * Affiche/cache les statistiques avancées.
+                 */
                 toggleAdvancedStats() {
                     this.advancedStatsVisible = !this.advancedStatsVisible;
                     localStorage.setItem('advancedStatsVisible', String(this.advancedStatsVisible));
                     this.loadHistory();
                 }
 
+                /**
+                 * Affiche/cache les boutons d'import/export CSV.
+                 */
                 toggleCsvButtons() {
                     this.csvButtonsEnabled = !this.csvButtonsEnabled;
                     localStorage.setItem('csvButtonsEnabled', String(this.csvButtonsEnabled));
-                    document.getElementById('csvLabel').textContent = this.csvButtonsEnabled ? 'Activé' : 'Désactivé';
                     this.updateCsvButtonsVisibility();
                 }
 
+                /**
+                 * Affiche/cache le bouton de faute.
+                 */
                 toggleFaultButton() {
                     this.faultButtonEnabled = !this.faultButtonEnabled;
                     localStorage.setItem('faultButtonEnabled', String(this.faultButtonEnabled));
-                    document.getElementById('faultButtonLabel').textContent = this.faultButtonEnabled ? 'Activé' : 'Désactivé';
                     this.updateFaultButtonVisibility();
                 }
 
+                /**
+                 * Active/désactive la règle "take as throw".
+                 */
+                toggleTakeAsThrow() {
+                    this.useTakeAsThrow = !this.useTakeAsThrow;
+                    localStorage.setItem('useTakeAsThrow', String(this.useTakeAsThrow));
+                    this.updateTakeAsThrowLabel();
+                }
+
+                /**
+                 * Met à jour la visibilité du bouton de faute.
+                 */
                 updateFaultButtonVisibility() {
                     const faultBtn = document.getElementById('faultBtn');
                     if (faultBtn) {
-                        faultBtn.style.display = this.faultButtonEnabled ? 'block' : 'none';
+                        faultBtn.style.display = this.faultButtonEnabled ? 'flex' : 'none';
                     }
                 }
 
+                /**
+                 * Met à jour la visibilité des boutons CSV.
+                 */
                 updateCsvButtonsVisibility() {
                     const importBtnLabel = document.querySelector('label[for="importCsvInput"]');
                     const exportBtn = document.getElementById('exportBtn');
@@ -1793,18 +2275,28 @@
                     }
                 }
 
+                /**
+                 * Met à jour le seuil minimum de lancés.
+                 * @param {Event} e - L'événement de changement.
+                 */
                 updateSeuil(e) {
                     this.seuilMinimum = parseInt(e.target.value, 10) || 0;
                     localStorage.setItem('seuilMinimum', String(this.seuilMinimum));
                 }
 
+                /**
+                 * Affiche une confirmation avant de purger tout l'historique.
+                 */
                 purgeHistory() {
-                    this.showModal('Vraiment supprimer tout l\'historique ? Cette action est irréversible.', () => {
+                    this.showModal(this.t('modal.confirm_purge_history'), () => {
                         localStorage.removeItem('discDogHistory');
                         this.loadHistory();
                     });
                 }
                 
+                /**
+                 * Exporte toutes les données de l'application (localStorage) dans un fichier JSON.
+                 */
                 exportData() {
                     const dataToBackup = {};
                     // Itérer sur toutes les clés du localStorage pour créer un objet complet
@@ -1827,6 +2319,10 @@
                     URL.revokeObjectURL(url);
                 }
 
+                /**
+                 * Importe des données depuis un fichier JSON de sauvegarde.
+                 * @param {Event} event - L'événement de changement de fichier.
+                 */
                 importData(event) {
                     const file = event.target.files[0];
                     if (!file) {
@@ -1848,14 +2344,14 @@
                                     }
                                 }
                                 // Afficher un message et recharger la page
-                                this.showModal("Restauration réussie. L'application va maintenant se recharger pour appliquer les modifications.", () => {
+                                this.showModal(this.t('backup.success'), () => {
                                     location.reload();
                                 });
                             } else {
-                                this.showModal("Erreur : Le fichier de sauvegarde semble invalide ou corrompu.", null);
+                                this.showModal(this.t('backup.error_invalid_file'), null);
                             }
                         } catch (error) {
-                            this.showModal(`Erreur lors de la lecture du fichier : ${error.message}`, null);
+                            this.showModal(this.t('backup.error_reading_file', {errorMessage: error.message}), null);
                         }
                     };
                     reader.readAsText(file);
@@ -1863,42 +2359,200 @@
                     event.target.value = '';
                 }
 
+                /**
+                 * Gère l'importation de runs depuis un fichier CSV.
+                 * @param {Event} event - L'événement de changement de fichier.
+                 */
                 handleCsvImport(event) {
                     const file = event.target.files[0];
                     if (!file) return;
 
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        const text = e.target.result;
-                        console.log("La fonction d'importation doit être mise à jour pour la nouvelle structure de données.");
+                        try {
+                            const text = e.target.result;
+                            const rows = text.split(/\r\n|\n/).filter(row => row.trim() !== '');
+                            if (rows.length < 2) {
+                                throw new Error(this.t('import.error_empty_csv'));
+                            }
+                            const headers = rows[0].split(';').map(h => h.trim().replace(/"/g, ''));
+                            const expectedHeaders = ['id', 'dogName', 'actionHistory_json', 'advancedStats_json'];
+                            if (!expectedHeaders.every(h => headers.includes(h))) {
+                                throw new Error(this.t('import.error_wrong_headers'));
+                            }
+                            let importedRuns = [];
+                            let existingHistory = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                            const existingIds = new Set(existingHistory.map(run => String(run.id)));
+
+                            for (let i = 1; i < rows.length; i++) {
+                                const values = rows[i].match(/(".*?"|[^;]+)(?=\s*;|\s*$)/g) || [];
+                                const runData = {};
+                                headers.forEach((header, index) => {
+                                    let value = values[index] || '';
+                                    if (value.startsWith('"') && value.endsWith('"')) {
+                                        value = value.slice(1, -1).replace(/""/g, '"');
+                                    }
+
+                                    if (header === 'actionHistory_json' || header === 'advancedStats_json') {
+                                        runData[header.replace('_json', '')] = JSON.parse(value || '{}');
+                                    } else if (['score', 'totalThrows', 'catches', 'drops', 'takes', 'faults', 'elapsedTime', 'seuilMinimum'].includes(header)) {
+                                        runData[header] = parseFloat(String(value).replace(',', '.')) || 0;
+                                    } else if(header === 'useTakeAsThrow') {
+                                        runData[header] = value === 'true';
+                                    }
+                                    else {
+                                        runData[header] = header === 'id' ? Number(value) : value;
+                                    }
+                                });
+                
+                                if (runData.id && !existingIds.has(String(runData.id))) {
+                                    importedRuns.push(runData);
+                                    existingIds.add(String(runData.id));
+                                }
+                            }
+            
+                            if (importedRuns.length === 0) {
+                                this.showImportStatus(this.t('import.status_no_new_runs'), "info");
+                                return;
+                            }
+
+                            const updatedHistory = [...existingHistory, ...importedRuns];
+                            localStorage.setItem('discDogHistory', JSON.stringify(updatedHistory));
+                            const newDogNames = [...new Set(importedRuns.map(run => run.dogName))];
+                            newDogNames.forEach(name => {
+                                if (name && !this.dogProfiles.some(profile => profile.name.toLowerCase() === name.toLowerCase())) {
+                                    this.addDogProfile(name);
+                                }
+                            });
+                            this.showImportStatus(this.t('import.status_success', {count: importedRuns.length}), 'success');
+                            this.loadHistory();
+                        } catch (error) {
+                            console.error("Erreur lors de l'importation CSV:", error);
+                            this.showImportStatus(this.t('import.status_error', {errorMessage: error.message}), 'error');
+                        } finally {
+                            event.target.value = '';
+                        }
                     };
                     reader.readAsText(file, 'UTF-8');
                 }
 
-                showImportStatus(message, type) {
+
+                /**
+                 * Affiche un message d'état pour l'importation.
+                 * @param {string} message - Le message à afficher.
+                 * @param {string} type - Le type de message ('info', 'success', 'error').
+                 */
+                showImportStatus(message, type = 'info') {
                     const statusEl = document.getElementById('importStatus');
                     statusEl.textContent = message;
-                    statusEl.style.color = type === 'error' ? '#F44336' : '#4CAF50';
-                    setTimeout(() => statusEl.textContent = '', 5000);
+                    statusEl.style.color = type === 'error' ? '#F44336' : (type === 'success' ? '#4CAF50' : '#666');
+                    setTimeout(() => {
+                        statusEl.textContent = '';
+                    }, 5000);
                 }
 
+                /**
+                 * Exporte l'historique des runs au format CSV.
+                 */
                 exportCSV() {
-                    console.log("La fonction d'exportation doit être mise à jour pour la nouvelle structure de données.");
-                    alert("La fonction d'exportation doit être mise à jour.");
+                    let history = JSON.parse(localStorage.getItem('discDogHistory') || '[]');
+                    if (history.length === 0) {
+                        this.showModal(this.t('modal.error_empty_history_export'));
+                        return;
+                    }
+                    history.forEach(run => {
+                        if (!run.advancedStats && run.actionHistory) {
+                            run.advancedStats = this.calculateAdvancedStats(run.actionHistory, run.elapsedTime, run.useTakeAsThrow);
+                        }
+                    });
+                    const headers = [
+                        'id', 'dogName', 'runTag', 'date', 'time',
+                        'score', 'totalThrows', 'catches', 'drops', 'takes', 'faults',
+                        'elapsedTime', 'seuilMinimum', 'useTakeAsThrow', 'notes',
+                        'actionHistory_json', 'advancedStats_json'
+                    ];
+
+                    const escapeCsvField = (field) => {
+                        if (field === null || field === undefined) return '';
+                        let stringField = String(field);
+                        if (typeof field === 'number') {
+                            stringField = stringField.replace('.', ',');
+                        }
+                        if (stringField.includes(';') || stringField.includes('"') || stringField.includes('\n')) {
+                            return `"${stringField.replace(/"/g, '""')}"`;
+                        }
+                        return stringField;
+                    };
+                    const csvRows = [headers.join(';')];
+                    history.forEach(run => {
+                        const row = [
+                            run.id, run.dogName, run.runTag, run.date, run.time,
+                            run.score, run.totalThrows, run.catches, run.drops, run.takes, run.faults,
+                            run.elapsedTime, run.seuilMinimum, run.useTakeAsThrow, run.notes,
+                            JSON.stringify(run.actionHistory || []),
+                            JSON.stringify(run.advancedStats || {})
+                        ].map(escapeCsvField);
+                        csvRows.push(row.join(';'));
+                    });
+
+                    const csvString = csvRows.join('\r\n');
+                    const blob = new Blob([`\uFEFF${csvString}`], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const date = new Date().toISOString().slice(0, 10);
+                    a.href = url;
+                    a.download = `catch-ratio-runs-${date}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    this.showImportStatus(this.t('export.status_success'), 'success');
                 }
 
+                /**
+                 * Affiche la modale de partage.
+                 */
                 showShareModal() {
                     const modal = document.getElementById('shareModal');
                     modal.style.display = 'block';
                     setTimeout(() => modal.classList.add('visible'), 10);
                 }
 
+                /**
+                 * Cache la modale de partage.
+                 */
                 hideShareModal() {
                     const modal = document.getElementById('shareModal');
                     modal.classList.remove('visible');
                     setTimeout(() => modal.style.display = 'none', 300);
                 }
                 
+                /**
+                 * Construit et configure le sélecteur de langue personnalisé.
+                 */
+                setupLanguageSelector() {
+                    const selectedLanguageEl = document.getElementById('selectedLanguage');
+                    const languageOptionsEl = document.getElementById('languageOptions');
+
+                    selectedLanguageEl.innerHTML = `<span class="flag">${this.languageFlags[this.language]}</span>`;
+                    languageOptionsEl.innerHTML = '';
+
+                    for (const langCode in this.languageFlags) {
+                        const option = document.createElement('div');
+                        option.innerHTML = `<span class="flag">${this.languageFlags[langCode]}</span>`;
+                        option.addEventListener('click', () => {
+                            this.changeLanguage(langCode);
+                            selectedLanguageEl.innerHTML = `<span class="flag">${this.languageFlags[langCode]}</span>`;
+                            languageOptionsEl.classList.add('select-hide');
+                        });
+                        languageOptionsEl.appendChild(option);
+                    }
+                }
+                
+                /**
+                 * Génère une image partageable des résultats d'un run.
+                 * @param {Object|null} runData - Les données du run à partager.
+                 */
                 generateShareImage(runData = null) {
                     const dataToShare = runData || this.lastRunData;
                     if (!dataToShare) return;
@@ -1906,13 +2560,12 @@
                     this.showShareModal();
                     const imageContainer = document.getElementById('shareImageContainer');
                     imageContainer.innerHTML = '<div class="loader"></div>';
-
                     const dateToFormat = dataToShare.date instanceof Date ? dataToShare.date : new Date(dataToShare.date.split('/').reverse().join('-') + 'T' + (dataToShare.time || "12:00:00"));
                     
                     document.getElementById('shareDogName').textContent = dataToShare.dogName || 'N/A';
                     document.getElementById('shareDate').textContent = dateToFormat.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                     document.getElementById('shareRunTag').textContent = (dataToShare.runTag || '').replace('#Run', 'Run ');
-                    document.getElementById('shareScore').textContent = dataToShare.score.toFixed(1);
+                    document.getElementById('shareScore').textContent = (dataToShare.score || 0).toFixed(1);
                     document.getElementById('shareCatches').textContent = dataToShare.catches;
                     document.getElementById('shareDrops').textContent = dataToShare.drops;
                     document.getElementById('shareTakes').textContent = dataToShare.takes;
@@ -1925,8 +2578,7 @@
                         const span = document.createElement('span');
                         span.className = 'timeline-item';
                         span.textContent = item;
-                        const classMap = { 'C': 'timeline-catch', 'D': 'timeline-drop', 'T': 'timeline-take', 'F': 'timeline-fault' };
-                        span.classList.add(classMap[item]);
+                        span.classList.add({ 'C': 'timeline-catch', 'D': 'timeline-drop', 'T': 'timeline-take', 'F': 'timeline-fault' }[item]);
                         timelineContainer.appendChild(span);
                     });
 
@@ -1934,12 +2586,11 @@
                     advancedStatsContainer.innerHTML = '';
                     if (this.advancedStatsVisible && dataToShare.advancedStats) {
                         const stats = dataToShare.advancedStats;
-                
                         advancedStatsContainer.innerHTML = `
-                            <div class="share-advanced-stat"><strong>Ratio Début (30s):</strong><span>${stats.startRatio === -1 ? 'N/A' : stats.startRatio.toFixed(1)}</span></div>
-                            <div class="share-advanced-stat"><strong>Ratio Fin (30s):</strong><span>${stats.endRatio === -1 ? 'N/A' : stats.endRatio.toFixed(1)}</span></div>
-                            <div class="share-advanced-stat"><strong>Meilleure Série:</strong><div id="streak-timeline-container" class="share-streak-timeline"></div></div>
-                            <div class="share-advanced-stat"><strong>Consistance:</strong><span>${stats.consistency.firstHalf === -1 ? 'N/A' : `${stats.consistency.firstHalf.toFixed(1)} &rarr; ${stats.consistency.secondHalf.toFixed(1)}`}</span></div>
+                            <div class="share-advanced-stat"><strong>${this.t('history.adv_start_ratio_label')}:</strong><span>${stats.startRatio === -1 ? 'N/A' : stats.startRatio.toFixed(1)}</span></div>
+                            <div class="share-advanced-stat"><strong>${this.t('history.adv_end_ratio_label')}:</strong><span>${stats.endRatio === -1 ? 'N/A' : stats.endRatio.toFixed(1)}</span></div>
+                            <div class="share-advanced-stat"><strong>${this.t('history.adv_best_streak_label')}:</strong><div id="streak-timeline-container" class="share-streak-timeline"></div></div>
+                            <div class="share-advanced-stat"><strong>${this.t('history.adv_consistency_label')}:</strong><span>${stats.consistency.firstHalf === -1 ? 'N/A' : `${stats.consistency.firstHalf.toFixed(1)} &rarr; ${stats.consistency.secondHalf.toFixed(1)}`}</span></div>
                         `;
                         
                         const streakContainer = advancedStatsContainer.querySelector('#streak-timeline-container');
@@ -1965,7 +2616,6 @@
                         }).then(canvas => {
                             const imageUrl = canvas.toDataURL('image/png');
                             imageContainer.innerHTML = `<img src="${imageUrl}" alt="Résumé du run">`;
-                            
                             const downloadBtn = document.getElementById('downloadShareBtn');
                             if (this.shareEnabled) {
                                 downloadBtn.href = imageUrl;
@@ -1984,6 +2634,11 @@
                     }, 500);
                 }
 
+                /**
+                 * Affiche une modale de confirmation générique.
+                 * @param {string} message - Le message à afficher dans la modale.
+                 * @param {Function} callback - La fonction à exécuter si l'utilisateur confirme.
+                 */
                 showModal(message, callback) {
                     const modal = document.getElementById('confirmModal');
                     document.getElementById('modalMessage').textContent = message;
@@ -1992,6 +2647,9 @@
                     this.modalConfirmCallback = callback;
                 }
 
+                /**
+                 * Cache la modale de confirmation.
+                 */
                 hideModal() {
                     const modal = document.getElementById('confirmModal');
                     modal.classList.remove('visible');
@@ -1999,6 +2657,9 @@
                     this.modalConfirmCallback = null;
                 }
 
+                /**
+                 * Gère la confirmation de la modale.
+                 */
                 confirmModal() {
                     if (this.modalConfirmCallback) {
                         this.modalConfirmCallback();
@@ -2007,6 +2668,7 @@
                 }
             }
 
+            // Crée une nouvelle instance de l'application pour la démarrer.
             new DiscDogScorer();
         });
     </script>
