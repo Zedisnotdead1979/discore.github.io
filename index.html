@@ -17,12 +17,15 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         /* Variables CSS pour la thématisation */
         :root {
             /* Typographie */
-            --font-family-base: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-family-base: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
             --font-weight-regular: 400;
             --font-weight-semibold: 600;
             --font-weight-bold: 700;
@@ -149,12 +152,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            padding: 20px;
+            /* Padding is removed from here and added to specific views if needed */
             background-color: var(--app-bg);
             transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+        }
+        
+        #measureView, #resultsView, #historyView, #optionsView {
+            padding: 20px;
         }
 
         /* Désactive les transitions au chargement initial */
@@ -187,7 +194,7 @@
         }
 
 
-        /* --- Vue de Mesure --- */
+        /* --- Vue de Mesure (Catch Ratio) --- */
         #measureView .action-buttons {
             margin-top: auto;
             padding-top: 20px;
@@ -434,9 +441,9 @@
 
 
         /* --- Vue Historique --- */
-        .history-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .search-container { width: 100%; margin-bottom: 15px; }
-        .search-input {
+        #historyView .history-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        #historyView .search-container { width: 100%; margin-bottom: 15px; }
+        #historyView .search-input {
             width: 100%;
             padding: 12px;
             border: none;
@@ -446,21 +453,21 @@
             color: var(--text-primary);
             transition: all 0.3s ease;
         }
-        .search-input:focus {
+        #historyView .search-input:focus {
             outline: none;
         }
-        .search-input::placeholder {
+        #historyView .search-input::placeholder {
             color: var(--text-secondary);
             opacity: 0.7;
         }
-        .sort-button, .export-button, .import-button { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 5px; background-color: var(--button-bg); color: var(--button-text); cursor: pointer; font-size: 0.9em; transition: all 0.2s ease, transform 0.1s ease; font-weight: var(--font-weight-semibold); }
-        .sort-button:active, .export-button:active, .import-button:active { transform: scale(0.97); }
-        .export-button { background-color: var(--header-bg); color: var(--header-text); border-color: var(--header-bg); }
-        .import-button { background-color: transparent; color: var(--header-bg); border: 2px solid var(--header-bg); }
-        .sort-button.active { background-color: var(--header-bg); color: var(--header-text); }
-        .import-status { text-align: center; margin-bottom: 15px; font-style: italic; color: #999; }
-        .history-list { }
-        .history-item { 
+        #historyView .sort-button, #historyView .export-button, #historyView .import-button { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 5px; background-color: var(--button-bg); color: var(--button-text); cursor: pointer; font-size: 0.9em; transition: all 0.2s ease, transform 0.1s ease; font-weight: var(--font-weight-semibold); }
+        #historyView .sort-button:active, #historyView .export-button:active, #historyView .import-button:active { transform: scale(0.97); }
+        #historyView .export-button { background-color: var(--header-bg); color: var(--header-text); border-color: var(--header-bg); }
+        #historyView .import-button { background-color: transparent; color: var(--header-bg); border: 2px solid var(--header-bg); }
+        #historyView .sort-button.active { background-color: var(--header-bg); color: var(--header-text); }
+        #historyView .import-status { text-align: center; margin-bottom: 15px; font-style: italic; color: #999; }
+        #historyView .history-list { }
+        #historyView .history-item { 
             background-color: var(--button-bg); 
             padding: 15px; 
             margin-bottom: 10px; 
@@ -468,33 +475,33 @@
             cursor: default;
             border: 1px solid var(--border-color);
         }
-        .history-item:hover {
+        #historyView .history-item:hover {
             background-color: color-mix(in srgb, var(--button-bg) 90%, var(--text-primary));
         }
-        .history-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .history-header-info { flex: 1; }
-        .dog-name { font-weight: var(--font-weight-bold); font-size: 1.1em; color: var(--text-primary); }
-        .run-tag { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: var(--font-weight-semibold); }
-        .history-item-actions { display: flex; gap: 10px; flex-shrink: 0; }
-        .history-action-btn { background: none; border: none; cursor: pointer; padding: 5px; color: var(--history-action-color); border-radius: 50%; z-index: 2; transition: all 0.2s ease; }
-        .history-action-btn:hover { background-color: rgba(0,0,0,0.1); }
-        .history-action-btn:active { transform: scale(0.9); }
-        [data-theme="dark"] .history-action-btn:hover { background-color: rgba(255,255,255,0.1); }
-        .history-item-actions .delete-btn:hover {
+        #historyView .history-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        #historyView .history-header-info { flex: 1; }
+        #historyView .dog-name { font-weight: var(--font-weight-bold); font-size: 1.1em; color: var(--text-primary); }
+        #historyView .run-tag { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: var(--font-weight-semibold); }
+        #historyView .history-item-actions { display: flex; gap: 10px; flex-shrink: 0; }
+        #historyView .history-action-btn { background: none; border: none; cursor: pointer; padding: 5px; color: var(--history-action-color); border-radius: 50%; z-index: 2; transition: all 0.2s ease; }
+        #historyView .history-action-btn:hover { background-color: rgba(0,0,0,0.1); }
+        #historyView .history-action-btn:active { transform: scale(0.9); }
+        [data-theme="dark"] #historyView .history-action-btn:hover { background-color: rgba(255,255,255,0.1); }
+        #historyView .history-item-actions .delete-btn:hover {
             color: #F44336;
             background-color: rgba(244, 67, 54, 0.1);
         }
-        .history-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9em; color: var(--text-secondary); }
-        .history-details strong { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
-        .history-score { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.9em; font-weight: bold; display: inline-block; }
+        #historyView .history-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9em; color: var(--text-secondary); }
+        #historyView .history-details strong { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+        #historyView .history-score { background-color: var(--header-bg); color: var(--header-text); padding: 2px 8px; border-radius: 12px; font-size: 0.9em; font-weight: bold; display: inline-block; }
 
-        .advanced-stats-container {
+        #historyView .advanced-stats-container {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px dashed var(--border-color);
             text-align: center; /* Pour centrer le titre */
         }
-        .advanced-stats-title {
+        #historyView .advanced-stats-title {
             font-weight: var(--font-weight-bold);
             color: var(--header-bg);
             font-size: 0.7em;
@@ -505,16 +512,16 @@
             display: inline-block;
             margin-bottom: 10px;
         }
-        .advanced-stat {
+        #historyView .advanced-stat {
             display: flex;
             justify-content: space-between;
             font-size: 0.9em;
             padding: 4px 0;
             text-align: left; /* Réaligner le texte à gauche pour les stats */
         }
-        .advanced-stat .stat-label { color: var(--text-secondary); }
-        .advanced-stat .stat-value { font-weight: var(--font-weight-bold); color: var(--text-primary); }
-        .history-notes {
+        #historyView .advanced-stat .stat-label { color: var(--text-secondary); }
+        #historyView .advanced-stat .stat-value { font-weight: var(--font-weight-bold); color: var(--text-primary); }
+        #historyView .history-notes {
             margin-top: 15px;
             padding-top: 10px;
             font-style: italic;
@@ -524,9 +531,223 @@
             border-top: 1px dashed var(--border-color);
         }
 
-        [data-theme="dark"] .advanced-stats-title {
+        [data-theme="dark"] #historyView .advanced-stats-title {
             background-color: rgba(255, 255, 255, 0.1);
         }
+        
+        /* === DÉBUT STYLE VUE TOSS & CATCH === */
+        #tossAndCatchView .score-display-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--app-bg);
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        #tossAndCatchView .score-label-container {
+            text-align: left;
+        }
+        #tossAndCatchView .score-label {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #tossAndCatchView .score-and-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        #tossAndCatchView .score-value {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: var(--font-weight-bold);
+            color: var(--header-bg);
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 10px;
+            display: inline-block;
+            padding: 0 10px;
+        }
+        
+        #tossAndCatchView .score-value.resetting {
+            background-color: #ffdddd;
+        }
+
+        #tossAndCatchView .tc-undo-button {
+            background-color: transparent;
+            border: 2px solid var(--header-bg);
+            color: var(--header-bg);
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: var(--font-weight-bold);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        #tossAndCatchView .tc-undo-button:hover:not(:disabled) {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            transform: scale(1.05);
+        }
+        #tossAndCatchView .tc-undo-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            background-color: transparent;
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        #tossAndCatchView .terrain-container {
+            --couleur-verte: #2E8B57;
+            --couleur-blanche: #FFFFFF;
+            --hauteur-ligne: 4px;
+            --bordure-cercle: 4px;
+            position: relative;
+            width: 100%;
+            flex-grow: 1; 
+            background-color: var(--couleur-verte);
+        }
+
+        #tossAndCatchView .marquage-visuel {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            color: var(--couleur-blanche);
+        }
+
+        #tossAndCatchView .marquage-visuel[data-line="50"] { top: 4.5%; }
+        #tossAndCatchView .marquage-visuel[data-line="40"] { top: 19.5%; }
+        #tossAndCatchView .marquage-visuel[data-line="30"] { top: 34.5%; }
+        #tossAndCatchView .marquage-visuel[data-line="20"] { top: 49.5%; }
+        #tossAndCatchView .marquage-visuel[data-line="10"] { top: 64.5%; }
+        #tossAndCatchView .marquage-visuel[data-line="0"]  { top: 79.5%; }
+
+        #tossAndCatchView .ligne-horizontale {
+            background-color: var(--couleur-blanche);
+            height: var(--hauteur-ligne);
+            width: 96%;
+            margin: 0 auto;
+        }
+
+        #tossAndCatchView .etiquette-distance {
+            position: absolute;
+            left: 10px;
+            bottom: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        #tossAndCatchView .throwing-line {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            width: 100%;
+            position: absolute;
+            top: -25px;
+            left: 0;
+        }
+        
+        #tossAndCatchView .demi-cercle {
+            position: absolute;
+            width: 36%;
+            height: 0; 
+            padding-top: 18%;
+            left: 50%;
+            top: 0; 
+            transform: translate(-50%, -100%); 
+            border: var(--bordure-cercle) solid var(--couleur-blanche);
+            border-bottom: none;
+            border-radius: 999px 999px 0 0;
+            box-sizing: border-box;
+        }
+        
+        #tossAndCatchView .zone-cliquable {
+            position: absolute;
+            width: 100%;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.1s ease-in-out;
+        }
+        
+        #tossAndCatchView .zone-cliquable:hover {
+             background-color: rgba(255, 255, 0, 0.15);
+        }
+        #tossAndCatchView .zone-flash {
+            background-color: rgba(255, 255, 0, 0.4) !important;
+        }
+        
+        #tossAndCatchView #zone-40-50 { top: 4.5%; height: 15%; } 
+        #tossAndCatchView #zone-30-40 { top: 19.5%; height: 15%; }
+        #tossAndCatchView #zone-20-30 { top: 34.5%; height: 15%; }
+        #tossAndCatchView #zone-10-20 { top: 49.5%; height: 15%; }
+        #tossAndCatchView #zone-0-10 { 
+            top: 64.5%; 
+            height: 15%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #tossAndCatchView .drop-text-label {
+            background-color: transparent;
+            border: none;
+            color: var(--couleur-blanche);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: var(--font-weight-bold);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+        
+        #tossAndCatchView .demi-cercle {
+             cursor: pointer;
+             z-index: 11;
+             transition: border-color 0.1s;
+        }
+        #tossAndCatchView .demi-cercle:hover {
+            border-color: yellow;
+        }
+        #tossAndCatchView .demi-cercle-flash {
+             background-color: rgba(255, 255, 0, 0.4) !important;
+        }
+
+        #tossAndCatchView .score-history-container {
+            position: absolute;
+            bottom: 1%;
+            left: 0;
+            width: 100%;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+        #tossAndCatchView .score-history-container table {
+            width: 100%;
+            color: white;
+            border-collapse: collapse;
+        }
+        #tossAndCatchView .score-history-container td {
+            width: 50%;
+            padding: 3px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        #tossAndCatchView .score-history-container td span {
+            font-weight: 700;
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            min-width: 45px;
+            text-align: center;
+        }
+        /* === FIN STYLE VUE TOSS & CATCH === */
 
 
         /* --- Vue Options --- */
@@ -570,7 +791,7 @@
         .danger-button { background-color: #F44336; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: var(--font-weight-bold); width: 100%; transition: all 0.2s ease, transform 0.1s ease; }
         .danger-button:hover { background-color: #da190b; }
         .danger-button:active { transform: scale(0.97); }
-        .version-container { margin-top: auto; padding-top: 20px; text-align: center; color: var(--text-secondary); opacity: 0.8; font-size: 0.9em; }
+        .version-container { text-align: center; color: var(--text-secondary); opacity: 0.8; font-size: 0.9em; }
 
         .dog-management-form { display: flex; gap: 10px; margin-bottom: 15px; }
         .dog-management-form .form-input { flex-grow: 1; }
@@ -669,6 +890,37 @@
             background-color: color-mix(in srgb, var(--button-bg) 90%, var(--text-primary));
         }
 
+        /* --- Bouton de soutien --- */
+        .support-button-container {
+            padding: 0 20px 10px 20px; /* Espacement autour */
+            margin-top: auto; /* Pousse ce conteneur et la version vers le bas */
+        }
+        
+        .support-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            font-size: 1.1em;
+            font-weight: var(--font-weight-bold);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease, transform 0.1s ease;
+        }
+
+        .support-btn:hover {
+            opacity: 0.9;
+        }
+
+        .support-btn:active {
+            transform: scale(0.98);
+        }
 
         /* --- Modales --- */
         .modal {
@@ -856,8 +1108,8 @@
             .app-container { margin: 10px; border-radius: 10px; }
             .timer { font-size: 2.5em; }
             .count-button { padding: 15px; font-size: 1.1em; }
-            .history-controls { flex-direction: column; }
-            .sort-button, .export-button, .import-button { width: 100%; }
+            #historyView .history-controls { flex-direction: column; }
+            #historyView .sort-button, #historyView .export-button, #historyView .import-button { width: 100%; }
         }
 
         /* Cacher l'option plein écran sur les appareils non-mobiles */
@@ -889,7 +1141,7 @@
         </div>
         <!-- Contenu principal qui change en fonction de la vue -->
         <div class="content">
-            <!-- Vue de Mesure -->
+            <!-- Vue de Mesure (Catch Ratio) -->
             <div class="view active" id="measureView">
                 <div class="timer-container"><div class="timer" id="timer">00:00</div></div>
                 <div class="stats-display">
@@ -916,6 +1168,62 @@
                     <button class="action-button" id="endRunBtn" data-i18n-key="measure.button_end_run"></button>
                 </div>
             </div>
+            
+            <!-- Vue Toss & Catch (NOUVEAU) -->
+            <div class="view" id="tossAndCatchView">
+                 <header class="score-display-header">
+                    <div class="score-label-container">
+                        <p class="score-label">Toss & Catch Score</p>
+                    </div>
+                    <div class="score-and-controls">
+                        <p class="score-value" id="toss-catch-score-display">0</p>
+                        <button id="toss-catch-undo-btn" class="tc-undo-button" title="Annuler le dernier lancer">Undo</button>
+                    </div>
+                </header>
+                <div class="terrain-container">
+                    <!-- Zones Cliquables -->
+                    <div class="zone-cliquable" id="zone-40-50" data-points="2"></div>
+                    <div class="zone-cliquable" id="zone-30-40" data-points="1.5"></div>
+                    <div class="zone-cliquable" id="zone-20-30" data-points="1"></div>
+                    <div class="zone-cliquable" id="zone-10-20" data-points="0.5"></div>
+                    <div class="zone-cliquable" id="zone-0-10" data-points="0" data-label="DROP">
+                        <div class="drop-text-label">DROP</div>
+                    </div>
+                    
+                    <!-- Éléments Visuels -->
+                    <div class="marquage-visuel" data-line="50"><span class="etiquette-distance">50 yard / 45.5 meter</span><div class="ligne-horizontale"></div></div>
+                    <div class="marquage-visuel" data-line="40"><span class="etiquette-distance">40 yard / 36.4 meter</span><div class="ligne-horizontale"></div><div class="demi-cercle" data-points="2.5"></div></div>
+                    <div class="marquage-visuel" data-line="30"><span class="etiquette-distance">30 yard / 27.3 meter</span><div class="ligne-horizontale"></div></div>
+                    <div class="marquage-visuel" data-line="20"><span class="etiquette-distance">20 yard / 18.2 meter</span><div class="ligne-horizontale"></div></div>
+                    <div class="marquage-visuel" data-line="10"><span class="etiquette-distance">10 yard / 9.1 meter</span><div class="ligne-horizontale"></div></div>
+                    <div class="marquage-visuel" data-line="0"><span class="throwing-line">Throwing Line</span><div class="ligne-horizontale"></div></div>
+                    
+                    <!-- Historique -->
+                    <div class="score-history-container">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Throw 1: <span id="score-lancer-1">N/A</span></td>
+                                    <td>Throw 5: <span id="score-lancer-5">N/A</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Throw 2: <span id="score-lancer-2">N/A</span></td>
+                                    <td>Throw 6: <span id="score-lancer-6">N/A</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Throw 3: <span id="score-lancer-3">N/A</span></td>
+                                    <td>Throw 7: <span id="score-lancer-7">N/A</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Throw 4: <span id="score-lancer-4">N/A</span></td>
+                                    <td>Throw 8: <span id="score-lancer-8">N/A</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Vue des Résultats -->
             <div class="view" id="resultsView">
                 <div class="results-section">
@@ -1060,6 +1368,15 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NOUVEAU BLOC POUR LE BOUTON GUIDE -->
+                <div class="option-group">
+                    <a href="https://github.com/Zedisnotdead1979/discore.github.io/tree/main?tab=readme-ov-file#readme" target="_blank" rel="noopener noreferrer" class="support-btn">
+                        <span class="material-icons">help_outline</span>
+                        <span>Guide EN / FR</span>
+                    </a>
+                </div>
+
                 <div class="option-group">
                     <div class="option-title" data-i18n-key="options.data_title"></div>
                     <div class="data-buttons">
@@ -1069,6 +1386,14 @@
                     </div>
                     <button class="danger-button" id="purgeBtn" data-i18n-key="options.purge_button"></button>
                 </div>
+
+                <div class="support-button-container">
+                    <a href="https://coff.ee/discodoggedKO" target="_blank" rel="noopener noreferrer" id="buyMeACoffeeBtn" class="support-btn">
+                        <span class="material-icons">coffee</span>
+                        <span data-i18n-key="options.buy_me_a_coffee"></span>
+                    </a>
+                </div>
+                
                 <div class="version-container"><p id="versionDisplay"></p></div>
             </div>
         </div>
@@ -1104,33 +1429,173 @@
         // Contient toutes les chaînes de caractères pour l'internationalisation.
         const translations = {
             fr: {
-                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Accueil","nav.history":"Historique","nav.options":"Options","measure.total_throws_label":"Total Lancés :","measure.no_throws":"Aucun lancé pour le moment","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Faute","measure.button_undo":"UNDO","measure.button_end_run":"Fin du Run","measure.button_results":"RESULTAT","measure.button_back_to_run":"Retour au Run","results.title":"Résultat du Run","results.score_summary":"Catch Ratio : {score} / {totalThrows} lancés","results.seuil_info":" (Seuil: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Temps Final","results.button_reset":"RAZ","results.button_save":"SAVE","history.search_placeholder":"Rechercher par chien ou note...","history.sort_date":"Date/Heure","history.sort_name":"Nom (A-Z)","history.sort_score":"Score","history.button_import_csv":"Importer Runs CSV","history.button_export_csv":"Exporter Runs CSV","history.no_runs_found":"Aucun run correspondant.","history.item_date_label":"Date:","history.item_time_label":"Heure:","history.item_duration_label":"Temps:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lancés:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Statistiques Avancées","history.adv_start_ratio_label":"Ratio Début (30s)","history.adv_end_ratio_label":"Ratio Fin (30s)","history.adv_best_streak_label":"Meilleure Série","history.adv_consistency_label":"Consistance","options.manage_dogs_title":"Gérer les chiens","options.add_dog_placeholder":"Ajouter un nouveau chien...","options.no_profiles":"Aucun profil.","options.rename_dog_prompt":"Renommer \"{oldName}\" :","options.rules_title":"Règles","options.min_throws_label":"Seuil Minimum de Lancés","options.fault_button_label":"Bouton Faute","options.take_as_throw_label":"Prendre les Takes en compte","options.take_as_throw_yes":"Oui","options.take_as_throw_no":"Non","options.interface_title":"Interface","options.fullscreen_label":"Plein Écran","options.theme_label":"Thème Sombre/Clair","options.transition_label":"Type de Transition","options.transition_horizontal":"Horizontale","options.transition_vertical":"Verticale","options.color_theme_label":"Thème de Couleur","options.features_title":"Fonctionnalités","options.haptic_label":"Retour Haptique (Vibration)","options.share_button_label":"Activer le bouton de partage","options.advanced_stats_label":"Afficher les stats avancées","options.csv_buttons_label":"Boutons d'import/export CSV","options.data_title":"Données","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purger l'historique","options.language_label":"Langue",
+                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Accueil","nav.history":"Historique","nav.options":"Options","measure.total_throws_label":"Total Lancés :","measure.no_throws":"Aucun lancé pour le moment","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Faute","measure.button_undo":"UNDO","measure.button_end_run":"Fin du Run","measure.button_results":"RESULTAT","measure.button_back_to_run":"Retour au Run","results.title":"Résultat du Run","results.score_summary":"Catch Ratio : {score} / {totalThrows} lancés","results.seuil_info":" (Seuil: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Temps Final","results.button_reset":"RAZ","results.button_save":"SAVE","history.search_placeholder":"Rechercher par chien ou note...","history.sort_date":"Date/Heure","history.sort_name":"Nom (A-Z)","history.sort_score":"Score","history.button_import_csv":"Importer Runs CSV","history.button_export_csv":"Exporter Runs CSV","history.no_runs_found":"Aucun run correspondant.","history.item_date_label":"Date:","history.item_time_label":"Heure:","history.item_duration_label":"Temps:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lancés:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Statistiques Avancées","history.adv_start_ratio_label":"Ratio Début (30s)","history.adv_end_ratio_label":"Ratio Fin (30s)","history.adv_best_streak_label":"Meilleure Série","history.adv_consistency_label":"Consistance","options.manage_dogs_title":"Gérer les chiens","options.add_dog_placeholder":"Ajouter un nouveau chien...","options.no_profiles":"Aucun profil.","options.rename_dog_prompt":"Renommer \"{oldName}\" :","options.rules_title":"Règles","options.min_throws_label":"Seuil Minimum de Lancés","options.fault_button_label":"Bouton Faute","options.take_as_throw_label":"Prendre les Takes en compte","options.take_as_throw_yes":"Oui","options.take_as_throw_no":"Non","options.interface_title":"Interface","options.fullscreen_label":"Plein Écran","options.theme_label":"Thème Sombre/Clair","options.transition_label":"Type de Transition","options.transition_horizontal":"Horizontale","options.transition_vertical":"Verticale","options.color_theme_label":"Thème de Couleur","options.features_title":"Fonctionnalités","options.haptic_label":"Retour Haptique (Vibration)","options.share_button_label":"Activer le bouton de partage","options.advanced_stats_label":"Afficher les stats avancées","options.csv_buttons_label":"Boutons d'import/export CSV","options.data_title":"Données","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purger l'historique","options.language_label":"Langue", "options.buy_me_a_coffee": "Offrez-moi un café",
                 "modal.confirm_delete_dog_profile":"Vraiment supprimer ce profil ?","modal.confirm_delete_dog_message":"Vraiment supprimer \"{dogName}\" ?","modal.confirm_delete_dog_associated_runs":" {runsCount} run(s) associé(s) ne seront PAS supprimés.","modal.confirm_exit_run_in_progress":"Un run est en cours. Si vous quittez, il sera annulé.","modal.confirm_exit_unsaved_run":"Le run n'a pas été sauvegardé. Voulez-vous quitter sans sauvegarder ?","modal.confirm_reset_run":"Vraiment réinitialiser ce run ?","modal.confirm_delete_run":"Vraiment supprimer ce run ?","modal.confirm_purge_history":"Vraiment supprimer tout l'historique ? Cette action est irréversible.","modal.error_empty_history_export":"L'historique est vide. Rien à exporter.","modal.button_cancel":"Annuler","modal.button_confirm":"Confirmer","modal.save_run_title":"Sauvegarder le Run","modal.dog_name_label":"Nom du chien","modal.dog_name_placeholder":"Entrez le nom du chien","modal.tag_preview":"Sera sauvegardé comme : #Run{runNumber}","modal.notes_label":"Notes (facultatif)","modal.notes_placeholder":"Ajoutez des remarques...","modal.button_register":"Enregistrer","modal.edit_run_title":"Modifier le Run","modal.button_update":"Mettre à jour","modal.error_enter_dog_name":"Veuillez entrer le nom du chien","modal.share_title":"Partager le Résultat","modal.share_button_download":"Télécharger","modal.share_button_close":"Fermer","share.card_header":"Catch Ratio","share.card_footer":"Made with Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Total",
                 "import.status_success":"{count} run(s) importé(s) avec succès !","import.status_no_new_runs":"Aucun nouveau run à importer. Les runs existants ont été ignorés.","import.status_error":"Erreur d'importation : {errorMessage}","import.error_empty_csv":"Le fichier CSV est vide ou ne contient que les en-têtes.","import.error_wrong_headers":"Les en-têtes du fichier CSV sont incorrects ou manquants. Assurez-vous que le fichier a été exporté depuis une version compatible de l'application.","export.status_success":"Exportation CSV réussie !","backup.success":"Restauration réussie. L'application va maintenant se recharger pour appliquer les modifications.","backup.error_invalid_file":"Erreur : Le fichier de sauvegarde semble invalide ou corrompu.","backup.error_reading_file":"Erreur lors de la lecture du fichier : {errorMessage}"
             },
             en: {
-                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Home","nav.history":"History","nav.options":"Options","measure.total_throws_label":"Total Throws:","measure.no_throws":"No throws yet","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fault","measure.button_undo":"UNDO","measure.button_end_run":"End Run","measure.button_results":"RESULT","measure.button_back_to_run":"Back to Run","results.title":"Run Result","results.score_summary":"Catch Ratio: {score} / {totalThrows} throws","results.seuil_info":" (Threshold: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Final Time","results.button_reset":"RESET","results.button_save":"SAVE","history.search_placeholder":"Search by dog or note...","history.sort_date":"Date/Time","history.sort_name":"Name (A-Z)","history.sort_score":"Score","history.button_import_csv":"Import Runs CSV","history.button_export_csv":"Export Runs CSV","history.no_runs_found":"No matching runs.","history.item_date_label":"Date:","history.item_time_label":"Time:","history.item_duration_label":"Time:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Throws:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Advanced Stats","history.adv_start_ratio_label":"Start Ratio (30s)","history.adv_end_ratio_label":"End Ratio (30s)","history.adv_best_streak_label":"Best Streak","history.adv_consistency_label":"Consistency","options.manage_dogs_title":"Manage Dogs","options.add_dog_placeholder":"Add a new dog...","options.no_profiles":"No profiles.","options.rename_dog_prompt":"Rename \"{oldName}\":","options.rules_title":"Rules","options.min_throws_label":"Minimum Throws Threshold","options.fault_button_label":"Fault Button","options.take_as_throw_label":"Count Takes as Throws","options.take_as_throw_yes":"Yes","options.take_as_throw_no":"No","options.interface_title":"Interface","options.fullscreen_label":"Full Screen","options.theme_label":"Dark/Light Theme","options.transition_label":"Transition Type","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertical","options.color_theme_label":"Color Theme","options.features_title":"Features","options.haptic_label":"Haptic Feedback (Vibration)","options.share_button_label":"Enable Share Button","options.advanced_stats_label":"Show Advanced Stats","options.csv_buttons_label":"CSV Import/Export Buttons","options.data_title":"Data","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purge History","options.language_label":"Language",
+                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Home","nav.history":"History","nav.options":"Options","measure.total_throws_label":"Total Throws:","measure.no_throws":"No throws yet","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fault","measure.button_undo":"UNDO","measure.button_end_run":"End Run","measure.button_results":"RESULT","measure.button_back_to_run":"Back to Run","results.title":"Run Result","results.score_summary":"Catch Ratio: {score} / {totalThrows} throws","results.seuil_info":" (Threshold: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Final Time","results.button_reset":"RESET","results.button_save":"SAVE","history.search_placeholder":"Search by dog or note...","history.sort_date":"Date/Time","history.sort_name":"Name (A-Z)","history.sort_score":"Score","history.button_import_csv":"Import Runs CSV","history.button_export_csv":"Export Runs CSV","history.no_runs_found":"No matching runs.","history.item_date_label":"Date:","history.item_time_label":"Time:","history.item_duration_label":"Time:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Throws:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Advanced Stats","history.adv_start_ratio_label":"Start Ratio (30s)","history.adv_end_ratio_label":"End Ratio (30s)","history.adv_best_streak_label":"Best Streak","history.adv_consistency_label":"Consistency","options.manage_dogs_title":"Manage Dogs","options.add_dog_placeholder":"Add a new dog...","options.no_profiles":"No profiles.","options.rename_dog_prompt":"Rename \"{oldName}\":","options.rules_title":"Rules","options.min_throws_label":"Minimum Throws Threshold","options.fault_button_label":"Fault Button","options.take_as_throw_label":"Count Takes as Throws","options.take_as_throw_yes":"Yes","options.take_as_throw_no":"No","options.interface_title":"Interface","options.fullscreen_label":"Full Screen","options.theme_label":"Dark/Light Theme","options.transition_label":"Transition Type","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertical","options.color_theme_label":"Color Theme","options.features_title":"Features","options.haptic_label":"Haptic Feedback (Vibration)","options.share_button_label":"Enable Share Button","options.advanced_stats_label":"Show Advanced Stats","options.csv_buttons_label":"CSV Import/Export Buttons","options.data_title":"Data","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purge History","options.language_label":"Language", "options.buy_me_a_coffee": "Buy me a Coffee",
                 "modal.confirm_delete_dog_profile":"Really delete this profile?","modal.confirm_delete_dog_message":"Really delete \"{dogName}\"?","modal.confirm_delete_dog_associated_runs":"{runsCount} associated run(s) will NOT be deleted.","modal.confirm_exit_run_in_progress":"A run is in progress. If you leave, it will be cancelled.","modal.confirm_exit_unsaved_run":"The run has not been saved. Do you want to leave without saving?","modal.confirm_reset_run":"Really reset this run?","modal.confirm_delete_run":"Really delete this run?","modal.confirm_purge_history":"Really delete the entire history? This action is irreversible.","modal.error_empty_history_export":"History is empty. Nothing to export.","modal.button_cancel":"Cancel","modal.button_confirm":"Confirm","modal.save_run_title":"Save Run","modal.dog_name_label":"Dog's Name","modal.dog_name_placeholder":"Enter the dog's name","modal.tag_preview":"Will be saved as: #Run{runNumber}","modal.notes_label":"Notes (optional)","modal.notes_placeholder":"Add remarks...","modal.button_register":"Save","modal.edit_run_title":"Edit Run","modal.button_update":"Update","modal.error_enter_dog_name":"Please enter the dog's name","modal.share_title":"Share Result","modal.share_button_download":"Download","modal.share_button_close":"Close","share.card_header":"Catch Ratio","share.card_footer":"Made with Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Total",
                 "import.status_success":"{count} run(s) imported successfully!","import.status_no_new_runs":"No new runs to import. Existing runs have been ignored.","import.status_error":"Import error: {errorMessage}","import.error_empty_csv":"The CSV file is empty or contains only headers.","import.error_wrong_headers":"The CSV headers are incorrect or missing. Make sure the file was exported from a compatible version of the application.","export.status_success":"CSV export successful!","backup.success":"Restore successful. The application will now reload to apply the changes.","backup.error_invalid_file":"Error: The backup file seems invalid or corrupt.","backup.error_reading_file":"Error reading file: {errorMessage}"
             },
             es: {
-                "app.title":"Catch Ratio ToolBox","app.version":"Versión {version}","nav.home":"Inicio","nav.history":"Historial","nav.options":"Opciones","measure.total_throws_label":"Total de Lanzamientos:","measure.no_throws":"No hay lanzamientos todavía","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Falta","measure.button_undo":"UNDO","measure.button_end_run":"Finalizar Carrera","measure.button_results":"RESULTADO","measure.button_back_to_run":"Volver a la Carrera","results.title":"Resultado de la Carrera","results.score_summary":"Catch Ratio: {score} / {totalThrows} lanzamientos","results.seuil_info":" (Umbral: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Tiempo Final","results.button_reset":"REINICIAR","results.button_save":"GUARDAR","history.search_placeholder":"Buscar por perro o nota...","history.sort_date":"Fecha/Hora","history.sort_name":"Nombre (A-Z)","history.sort_score":"Puntuación","history.button_import_csv":"Importar Carreras CSV","history.button_export_csv":"Exportar Carreras CSV","history.no_runs_found":"No se encontraron carreras.","history.item_date_label":"Fecha:","history.item_time_label":"Hora:","history.item_duration_label":"Tiempo:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lanzamientos:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Estadísticas Avanzadas","history.adv_start_ratio_label":"Ratio Inicial (30s)","history.adv_end_ratio_label":"Ratio Final (30s)","history.adv_best_streak_label":"Mejor Racha","history.adv_consistency_label":"Consistencia","options.manage_dogs_title":"Administrar Perros","options.add_dog_placeholder":"Añadir un nuevo perro...","options.no_profiles":"No hay perfiles.","options.rename_dog_prompt":"Renombrar \"{oldName}\":","options.rules_title":"Reglas","options.min_throws_label":"Umbral Mínimo de Lanzamientos","options.fault_button_label":"Botón de Falta","options.take_as_throw_label":"Contar 'Takes' como Lanzamientos","options.take_as_throw_yes":"Sí","options.take_as_throw_no":"No","options.interface_title":"Interfaz","options.fullscreen_label":"Pantalla Completa","options.theme_label":"Tema Oscuro/Claro","options.transition_label":"Tipo de Transición","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertical","options.color_theme_label":"Tema de Color","options.features_title":"Características","options.haptic_label":"Respuesta Háptica (Vibración)","options.share_button_label":"Activar Botón de Compartir","options.advanced_stats_label":"Mostrar Estadísticas Avanzadas","options.csv_buttons_label":"Botones de Importar/Exportar CSV","options.data_title":"Datos","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purgar Historial","options.language_label":"Idioma",
+                "app.title":"Catch Ratio ToolBox","app.version":"Versión {version}","nav.home":"Inicio","nav.history":"Historial","nav.options":"Opciones","measure.total_throws_label":"Total de Lanzamientos:","measure.no_throws":"No hay lanzamientos todavía","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Falta","measure.button_undo":"UNDO","measure.button_end_run":"Finalizar Carrera","measure.button_results":"RESULTADO","measure.button_back_to_run":"Volver a la Carrera","results.title":"Resultado de la Carrera","results.score_summary":"Catch Ratio: {score} / {totalThrows} lanzamientos","results.seuil_info":" (Umbral: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Tiempo Final","results.button_reset":"REINICIAR","results.button_save":"GUARDAR","history.search_placeholder":"Buscar por perro o nota...","history.sort_date":"Fecha/Hora","history.sort_name":"Nombre (A-Z)","history.sort_score":"Puntuación","history.button_import_csv":"Importar Carreras CSV","history.button_export_csv":"Exportar Carreras CSV","history.no_runs_found":"No se encontraron carreras.","history.item_date_label":"Fecha:","history.item_time_label":"Hora:","history.item_duration_label":"Tiempo:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lanzamientos:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Estadísticas Avanzadas","history.adv_start_ratio_label":"Ratio Inicial (30s)","history.adv_end_ratio_label":"Ratio Final (30s)","history.adv_best_streak_label":"Mejor Racha","history.adv_consistency_label":"Consistencia","options.manage_dogs_title":"Administrar Perros","options.add_dog_placeholder":"Añadir un nuevo perro...","options.no_profiles":"No hay perfiles.","options.rename_dog_prompt":"Renombrar \"{oldName}\":","options.rules_title":"Reglas","options.min_throws_label":"Umbral Mínimo de Lanzamientos","options.fault_button_label":"Botón de Falta","options.take_as_throw_label":"Contar 'Takes' como Lanzamientos","options.take_as_throw_yes":"Sí","options.take_as_throw_no":"No","options.interface_title":"Interfaz","options.fullscreen_label":"Pantalla Completa","options.theme_label":"Tema Oscuro/Claro","options.transition_label":"Tipo de Transición","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertical","options.color_theme_label":"Tema de Color","options.features_title":"Características","options.haptic_label":"Respuesta Háptica (Vibración)","options.share_button_label":"Activar Botón de Compartir","options.advanced_stats_label":"Mostrar Estadísticas Avanzadas","options.csv_buttons_label":"Botones de Importar/Exportar CSV","options.data_title":"Datos","options.backup_button":"Backup","options.restore_button":"Restore","options.purge_button":"Purgar Historial","options.language_label":"Idioma", "options.buy_me_a_coffee": "Invítame a un café",
                 "modal.confirm_delete_dog_profile":"¿Realmente quieres eliminar este perfil?","modal.confirm_delete_dog_message":"¿Realmente quieres eliminar a \"{dogName}\"?","modal.confirm_delete_dog_associated_runs":"{runsCount} carrera(s) asociada(s) NO se eliminarán.","modal.confirm_exit_run_in_progress":"Hay una carrera en progreso. Si sales, se cancelará.","modal.confirm_exit_unsaved_run":"La carrera no ha sido guardada. ¿Quieres salir sin guardar?","modal.confirm_reset_run":"¿Realmente quieres reiniciar esta carrera?","modal.confirm_delete_run":"¿Realmente quieres eliminar esta carrera?","modal.confirm_purge_history":"¿Realmente quieres eliminar todo el historial? Esta acción es irreversible.","modal.error_empty_history_export":"El historial está vacío. No hay nada que exportar.","modal.button_cancel":"Cancelar","modal.button_confirm":"Confirmar","modal.save_run_title":"Guardar Carrera","modal.dog_name_label":"Nombre del Perro","modal.dog_name_placeholder":"Introduce el nombre del perro","modal.tag_preview":"Se guardará como: #Carrera{runNumber}","modal.notes_label":"Notas (opcional)","modal.notes_placeholder":"Añadir comentarios...","modal.button_register":"Guardar","modal.edit_run_title":"Editar Carrera","modal.button_update":"Actualizar","modal.error_enter_dog_name":"Por favor, introduce el nombre del perro","modal.share_title":"Compartir Resultado","modal.share_button_download":"Descargar","modal.share_button_close":"Cerrar","share.card_header":"Catch Ratio","share.card_footer":"Hecho con Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Total",
                 "import.status_success":"¡{count} carrera(s) importada(s) con éxito!","import.status_no_new_runs":"No hay nuevas carreras para importar. Las carreras existentes han sido ignoradas.","import.status_error":"Error de importación: {errorMessage}","import.error_empty_csv":"El archivo CSV está vacío o solo contiene encabezados.","import.error_wrong_headers":"Los encabezados del CSV son incorrectos o faltan. Asegúrate de que el archivo fue exportado desde una versión compatible de la aplicación.","export.status_success":"¡Exportación de CSV exitosa!","backup.success":"Restauración exitosa. La aplicación se recargará para aplicar los cambios.","backup.error_invalid_file":"Error: El archivo de copia de seguridad parece inválido o corrompu.","backup.error_reading_file":"Error al leer el archivo: {errorMessage}"
             },
             it: {
-                "app.title":"Catch Ratio ToolBox","app.version":"Versione {version}","nav.home":"Home","nav.history":"Cronologia","nav.options":"Opzioni","measure.total_throws_label":"Lanci Totali:","measure.no_throws":"Nessun lancio per ora","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fallo","measure.button_undo":"ANNULLA","measure.button_end_run":"Fine Run","measure.button_results":"RISULTATO","measure.button_back_to_run":"Torna al Run","results.title":"Risultato del Run","results.score_summary":"Catch Ratio: {score} / {totalThrows} lanci","results.seuil_info":" (Soglia: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Tempo Finale","results.button_reset":"AZZERA","results.button_save":"SALVA","history.search_placeholder":"Cerca per cane o nota...","history.sort_date":"Data/Ora","history.sort_name":"Nome (A-Z)","history.sort_score":"Punteggio","history.button_import_csv":"Importa Run CSV","history.button_export_csv":"Esporta Run CSV","history.no_runs_found":"Nessun run trovato.","history.item_date_label":"Data:","history.item_time_label":"Ora:","history.item_duration_label":"Tempo:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lanci:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Statistiche Avanzate","history.adv_start_ratio_label":"Ratio Inizio (30s)","history.adv_end_ratio_label":"Ratio Fine (30s)","history.adv_best_streak_label":"Migliore Serie","history.adv_consistency_label":"Consistenza","options.manage_dogs_title":"Gestisci Cani","options.add_dog_placeholder":"Aggiungi un nuovo cane...","options.no_profiles":"Nessun profilo.","options.rename_dog_prompt":"Rinomina \"{oldName}\":","options.rules_title":"Regole","options.min_throws_label":"Soglia Minima Lanci","options.fault_button_label":"Pulsante Fallo","options.take_as_throw_label":"Conta 'Takes' come Lanci","options.take_as_throw_yes":"Sì","options.take_as_throw_no":"No","options.interface_title":"Interfaccia","options.fullscreen_label":"Schermo Intero","options.theme_label":"Tema Scuro/Chiaro","options.transition_label":"Tipo di Transizione","options.transition_horizontal":"Orizzontale","options.transition_vertical":"Verticale","options.color_theme_label":"Tema Colore","options.features_title":"Funzionalità","options.haptic_label":"Feedback Aptico (Vibrazione)","options.share_button_label":"Abilita Pulsante Condividi","options.advanced_stats_label":"Mostra Statistiche Avanzate","options.csv_buttons_label":"Pulsanti Importa/Esporta CSV","options.data_title":"Dati","options.backup_button":"Backup","options.restore_button":"Ripristina","options.purge_button":"Svuota Cronologia","options.language_label":"Lingua",
+                "app.title":"Catch Ratio ToolBox","app.version":"Versione {version}","nav.home":"Home","nav.history":"Cronologia","nav.options":"Opzioni","measure.total_throws_label":"Lanci Totali:","measure.no_throws":"Nessun lancio per ora","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fallo","measure.button_undo":"ANNULLA","measure.button_end_run":"Fine Run","measure.button_results":"RISULTATO","measure.button_back_to_run":"Torna al Run","results.title":"Risultato del Run","results.score_summary":"Catch Ratio: {score} / {totalThrows} lanci","results.seuil_info":" (Soglia: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Tempo Finale","results.button_reset":"AZZERA","results.button_save":"SALVA","history.search_placeholder":"Cerca per cane o nota...","history.sort_date":"Data/Ora","history.sort_name":"Nome (A-Z)","history.sort_score":"Punteggio","history.button_import_csv":"Importa Run CSV","history.button_export_csv":"Esporta Run CSV","history.no_runs_found":"Nessun run trovato.","history.item_date_label":"Data:","history.item_time_label":"Ora:","history.item_duration_label":"Tempo:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Lanci:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Statistiche Avanzate","history.adv_start_ratio_label":"Ratio Inizio (30s)","history.adv_end_ratio_label":"Ratio Fine (30s)","history.adv_best_streak_label":"Migliore Serie","history.adv_consistency_label":"Consistenza","options.manage_dogs_title":"Gestisci Cani","options.add_dog_placeholder":"Aggiungi un nuovo cane...","options.no_profiles":"Nessun profilo.","options.rename_dog_prompt":"Rinomina \"{oldName}\":","options.rules_title":"Regole","options.min_throws_label":"Soglia Minima Lanci","options.fault_button_label":"Pulsante Fallo","options.take_as_throw_label":"Conta 'Takes' come Lanci","options.take_as_throw_yes":"Sì","options.take_as_throw_no":"No","options.interface_title":"Interfaccia","options.fullscreen_label":"Schermo Intero","options.theme_label":"Tema Scuro/Chiaro","options.transition_label":"Tipo di Transizione","options.transition_horizontal":"Orizzontale","options.transition_vertical":"Verticale","options.color_theme_label":"Tema Colore","options.features_title":"Funzionalità","options.haptic_label":"Feedback Aptico (Vibrazione)","options.share_button_label":"Abilita Pulsante Condividi","options.advanced_stats_label":"Mostra Statistiche Avanzate","options.csv_buttons_label":"Pulsanti Importa/Esporta CSV","options.data_title":"Dati","options.backup_button":"Backup","options.restore_button":"Ripristina","options.purge_button":"Svuota Cronologia","options.language_label":"Lingua", "options.buy_me_a_coffee": "Offrimi un caffè",
                 "modal.confirm_delete_dog_profile":"Eliminare davvero questo profilo?","modal.confirm_delete_dog_message":"Eliminare davvero \"{oldName}\"?","modal.confirm_delete_dog_associated_runs":"{runsCount} run associato/i NON verranno eliminati.","modal.confirm_exit_run_in_progress":"C'è un run in corso. Se esci, verrà annullato.","modal.confirm_exit_unsaved_run":"Il run non è stato salvato. Vuoi uscire senza salvare?","modal.confirm_reset_run":"Reimpostare davvero questo run?","modal.confirm_delete_run":"Eliminare davvero questo run?","modal.confirm_purge_history":"Eliminare davvero tutta la cronologia? Questa azione è irreversibile.","modal.error_empty_history_export":"La cronologia è vuota. Niente da esportare.","modal.button_cancel":"Annulla","modal.button_confirm":"Conferma","modal.save_run_title":"Salva Run","modal.dog_name_label":"Nome del Cane","modal.dog_name_placeholder":"Inserisci il nome del cane","modal.tag_preview":"Sarà salvato come: #Run{runNumber}","modal.notes_label":"Note (opzionale)","modal.notes_placeholder":"Aggiungi commenti...","modal.button_register":"Salva","modal.edit_run_title":"Modifica Run","modal.button_update":"Aggiorna","modal.error_enter_dog_name":"Per favore, inserisci il nome del cane","modal.share_title":"Condividi Risultato","modal.share_button_download":"Scarica","modal.share_button_close":"Chiudi","share.card_header":"Catch Ratio","share.card_footer":"Realizzato con Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Totale",
                 "import.status_success":"{count} run importato/i con successo!","import.status_no_new_runs":"Nessun nuovo run da importare. I run esistenti sono stati ignorati.","import.status_error":"Errore di importazione: {errorMessage}","import.error_empty_csv":"Il file CSV è vuoto o contiene solo le intestazioni.","import.error_wrong_headers":"Le intestazioni del CSV non sono corrette o mancano. Assicurati che il file sia stato esportato da una versione compatibile dell'applicazione.","export.status_success":"Esportazione CSV riuscita!","backup.success":"Ripristino riuscito. L'applicazione si ricaricherà per applicare le modifiche.","backup.error_invalid_file":"Errore: Il file di backup sembra non valido o corrotto.","backup.error_reading_file":"Errore durante la lettura del file: {errorMessage}"
             },
             de: {
-                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Start","nav.history":"Verlauf","nav.options":"Optionen","measure.total_throws_label":"Würfe Gesamt:","measure.no_throws":"Noch keine Würfe","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fehler","measure.button_undo":"RÜCKGÄNGIG","measure.button_end_run":"Run beenden","measure.button_results":"ERGEBNIS","measure.button_back_to_run":"Zurück zum Run","results.title":"Run-Ergebnis","results.score_summary":"Catch Ratio: {score} / {totalThrows} Würfe","results.seuil_info":" (Schwelle: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Endzeit","results.button_reset":"ZURÜCKSETZEN","results.button_save":"SPEICHERN","history.search_placeholder":"Suche nach Hund oder Notiz...","history.sort_date":"Datum/Uhrzeit","history.sort_name":"Name (A-Z)","history.sort_score":"Punkte","history.button_import_csv":"Runs importieren (CSV)","history.button_export_csv":"Runs exportieren (CSV)","history.no_runs_found":"Keine passenden Runs gefunden.","history.item_date_label":"Datum:","history.item_time_label":"Uhrzeit:","history.item_duration_label":"Zeit:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Würfe:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Erweiterte Statistiken","history.adv_start_ratio_label":"Start-Ratio (30s)","history.adv_end_ratio_label":"End-Ratio (30s)","history.adv_best_streak_label":"Beste Serie","history.adv_consistency_label":"Konsistenz","options.manage_dogs_title":"Hunde verwalten","options.add_dog_placeholder":"Neuen Hund hinzufügen...","options.no_profiles":"Keine Profile.","options.rename_dog_prompt":"\"{oldName}\" umbenennen:","options.rules_title":"Regeln","options.min_throws_label":"Mindestwurfgrenze","options.fault_button_label":"Fehler-Button","options.take_as_throw_label":"'Takes' als Würfe zählen","options.take_as_throw_yes":"Ja","options.take_as_throw_no":"Nein","options.interface_title":"Oberfläche","options.fullscreen_label":"Vollbild","options.theme_label":"Dunkles/Helles Thema","options.transition_label":"Übergangstyp","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertikal","options.color_theme_label":"Farbthema","options.features_title":"Funktionen","options.haptic_label":"Haptisches Feedback (Vibration)","options.share_button_label":"Teilen-Button aktivieren","options.advanced_stats_label":"Erweiterte Statistiken anzeigen","options.csv_buttons_label":"CSV Import/Export Buttons","options.data_title":"Daten","options.backup_button":"Backup","options.restore_button":"Wiederherstellen","options.purge_button":"Verlauf leeren","options.language_label":"Sprache",
+                "app.title":"Catch Ratio ToolBox","app.version":"Version {version}","nav.home":"Start","nav.history":"Verlauf","nav.options":"Optionen","measure.total_throws_label":"Würfe Gesamt:","measure.no_throws":"Noch keine Würfe","measure.button_catch":"CATCH","measure.button_drop":"DROP","measure.button_take":"TAKE","measure.button_fault":"Fehler","measure.button_undo":"RÜCKGÄNGIG","measure.button_end_run":"Run beenden","measure.button_results":"ERGEBNIS","measure.button_back_to_run":"Zurück zum Run","results.title":"Run-Ergebnis","results.score_summary":"Catch Ratio: {score} / {totalThrows} Würfe","results.seuil_info":" (Schwelle: {seuilMinimum})","results.takes_label":"{takes} Takes","results.catches_label":"{catches} Catches","results.drops_label":"{drops} Drops","results.final_time_label":"Endzeit","results.button_reset":"ZURÜCKSETZEN","results.button_save":"SPEICHERN","history.search_placeholder":"Suche nach Hund oder Notiz...","history.sort_date":"Datum/Uhrzeit","history.sort_name":"Name (A-Z)","history.sort_score":"Punkte","history.button_import_csv":"Runs importieren (CSV)","history.button_export_csv":"Runs exportieren (CSV)","history.no_runs_found":"Keine passenden Runs gefunden.","history.item_date_label":"Datum:","history.item_time_label":"Uhrzeit:","history.item_duration_label":"Zeit:","history.item_ratio_label":"Catch Ratio:","history.item_throws_label":"Würfe:","history.item_catches_label":"Catches:","history.item_drops_label":"Drops:","history.item_takes_label":"Takes:","history.advanced_stats_title":"Erweiterte Statistiken","history.adv_start_ratio_label":"Start-Ratio (30s)","history.adv_end_ratio_label":"End-Ratio (30s)","history.adv_best_streak_label":"Beste Serie","history.adv_consistency_label":"Konsistenz","options.manage_dogs_title":"Hunde verwalten","options.add_dog_placeholder":"Neuen Hund hinzufügen...","options.no_profiles":"Keine Profile.","options.rename_dog_prompt":"\"{oldName}\" umbenennen:","options.rules_title":"Regeln","options.min_throws_label":"Mindestwurfgrenze","options.fault_button_label":"Fehler-Button","options.take_as_throw_label":"'Takes' als Würfe zählen","options.take_as_throw_yes":"Ja","options.take_as_throw_no":"Nein","options.interface_title":"Oberfläche","options.fullscreen_label":"Vollbild","options.theme_label":"Dunkles/Helles Thema","options.transition_label":"Übergangstyp","options.transition_horizontal":"Horizontal","options.transition_vertical":"Vertikal","options.color_theme_label":"Farbthema","options.features_title":"Funktionen","options.haptic_label":"Haptisches Feedback (Vibration)","options.share_button_label":"Teilen-Button aktivieren","options.advanced_stats_label":"Erweiterte Statistiken anzeigen","options.csv_buttons_label":"CSV Import/Export Buttons","options.data_title":"Daten","options.backup_button":"Backup","options.restore_button":"Wiederherstellen","options.purge_button":"Verlauf leeren","options.language_label":"Sprache", "options.buy_me_a_coffee": "Kauf mir einen Kaffee",
                 "modal.confirm_delete_dog_profile":"Dieses Profil wirklich löschen?","modal.confirm_delete_dog_message":"\"{dogName}\" wirklich löschen?","modal.confirm_delete_dog_associated_runs":"{runsCount} zugehörige(r) Run(s) werden NICHT gelöscht.","modal.confirm_exit_run_in_progress":"Ein Run läuft gerade. Wenn du gehst, wird er abgebrochen.","modal.confirm_exit_unsaved_run":"Der Run wurde nicht gespeichert. Möchtest du ohne Speichern verlassen?","modal.confirm_reset_run":"Diesen Run wirklich zurücksetzen?","modal.confirm_delete_run":"Diesen Run wirklich löschen?","modal.confirm_purge_history":"Den gesamten Verlauf wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.","modal.error_empty_history_export":"Der Verlauf ist leer. Nichts zu exportieren.","modal.button_cancel":"Abbrechen","modal.button_confirm":"Bestätigen","modal.save_run_title":"Run speichern","modal.dog_name_label":"Name des Hundes","modal.dog_name_placeholder":"Namen des Hundes eingeben","modal.tag_preview":"Wird gespeichert als: #Run{runNumber}","modal.notes_label":"Notizen (optional)","modal.notes_placeholder":"Anmerkungen hinzufügen...","modal.button_register":"Speichern","modal.edit_run_title":"Run bearbeiten","modal.button_update":"Aktualisieren","modal.error_enter_dog_name":"Bitte gib den Namen des Hundes ein","modal.share_title":"Ergebnis teilen","modal.share_button_download":"Herunterladen","modal.share_button_close":"Schließen","share.card_header":"Catch Ratio","share.card_footer":"Erstellt mit Catch Ratio ToolBox","share.catches_label_card":"Catches","share.drops_label_card":"Drops","share.takes_label_card":"Takes","share.total_label_card":"Gesamt",
                 "import.status_success":"{count} Run(s) erfolgreich importiert!","import.status_no_new_runs":"Keine neuen Runs zum Importieren. Bestehende Runs wurden ignoriert.","import.status_error":"Importfehler: {errorMessage}","import.error_empty_csv":"Die CSV-Datei ist leer oder enthält nur Kopfzeilen.","import.error_wrong_headers":"Die CSV-Kopfzeilen sind falsch oder fehlen. Stellen Sie sicher, dass die Datei von einer kompatiblen Anwendungsversion exportiert wurde.","export.status_success":"CSV-Export erfolgreich!","backup.success":"Wiederherstellung erfolgreich. Die Anwendung wird jetzt neu geladen, um die Änderungen zu übernehmen.","backup.error_invalid_file":"Fehler: Die Sicherungsdatei scheint ungültig oder beschädigt zu sein.","backup.error_reading_file":"Fehler beim Lesen der Datei: {errorMessage}"
             }
         };
 
         // --- FIN SECTION TRADUCTIONS ---
+
+        /**
+         * Classe pour gérer le module de notation Toss & Catch.
+         */
+        class TossAndCatchScorer {
+            constructor() {
+                this.scoreDisplay = document.getElementById('toss-catch-score-display');
+                this.clickableZones = document.querySelectorAll('#tossAndCatchView .zone-cliquable');
+                this.demiCercle = document.querySelector('#tossAndCatchView .demi-cercle');
+                this.undoButton = document.getElementById('toss-catch-undo-btn'); // NOUVEAU
+
+                this.scoreLancerSpans = [];
+                for (let i = 1; i <= 8; i++) {
+                    this.scoreLancerSpans.push(document.getElementById(`score-lancer-${i}`));
+                }
+
+                this.totalScore = 0;
+                this.lancerCount = 0;
+                this.scoreHistory = []; // NOUVEAU: Historique des points pour l'annulation
+                this.resetTimer = null;
+
+                this.bindEvents();
+                this.updateUndoButtonState(); // NOUVEAU: État initial du bouton
+            }
+
+            bindEvents() {
+                this.clickableZones.forEach(zone => {
+                    zone.addEventListener('click', (event) => {
+                        if (this.lancerCount >= 8) return;
+                        const points = parseFloat(event.currentTarget.dataset.points);
+                        const label = event.currentTarget.dataset.label || null;
+                        this.addScore(points, label);
+                        this.flash(event.currentTarget);
+                    });
+                });
+
+                if (this.demiCercle) {
+                    this.demiCercle.addEventListener('click', (event) => {
+                        if (this.lancerCount >= 8) return;
+                        event.stopPropagation();
+                        const points = parseFloat(event.currentTarget.dataset.points);
+                        this.addScore(points);
+                        this.flash(event.currentTarget);
+                    });
+                }
+                
+                // NOUVEAU: Événement pour le bouton Annuler
+                if (this.undoButton) {
+                    this.undoButton.addEventListener('click', () => this.undo());
+                }
+
+                if (this.scoreDisplay) {
+                    this.scoreDisplay.addEventListener('mousedown', () => this.startResetTimer());
+                    this.scoreDisplay.addEventListener('mouseup', () => this.clearResetTimer());
+                    this.scoreDisplay.addEventListener('mouseleave', () => this.clearResetTimer());
+                    this.scoreDisplay.addEventListener('touchstart', (e) => { e.preventDefault(); this.startResetTimer(); });
+                    this.scoreDisplay.addEventListener('touchend', () => this.clearResetTimer());
+                    this.scoreDisplay.addEventListener('touchcancel', () => this.clearResetTimer());
+                }
+            }
+            
+            // NOUVEAU: Gère l'annulation du dernier coup
+            undo() {
+                if (this.lancerCount === 0) return;
+
+                const lastPoints = this.scoreHistory.pop();
+                this.totalScore -= lastPoints;
+                this.lancerCount--;
+
+                this.updateDisplays(null, null, true); // true pour indiquer une annulation
+            }
+            
+            addScore(points, label = null) {
+                this.totalScore += points;
+                this.scoreHistory.push(points);
+                this.lancerCount++;
+
+                this.updateDisplays(label, points, false);
+            }
+
+            resetGame() {
+                this.totalScore = 0;
+                this.lancerCount = 0;
+                this.scoreHistory = []; // NOUVEAU
+                this.scoreDisplay.textContent = '0';
+                this.scoreLancerSpans.forEach(span => { if(span) span.textContent = 'N/A' });
+                this.updateUndoButtonState(); // NOUVEAU
+            }
+
+            // NOUVEAU: Méthode centralisée pour mettre à jour les affichages
+            updateDisplays(label, points, isUndo) {
+                // Mettre à jour le score total
+                this.scoreDisplay.textContent = Number.isInteger(this.totalScore) ? this.totalScore : this.totalScore.toFixed(1);
+
+                if (isUndo) {
+                    // Effacer le dernier lancer de l'historique visuel
+                    if (this.lancerCount < 8 && this.scoreLancerSpans[this.lancerCount]) {
+                        this.scoreLancerSpans[this.lancerCount].textContent = 'N/A';
+                    }
+                } else {
+                    // Ajouter le nouveau lancer à l'historique visuel
+                    if (this.lancerCount > 0 && this.lancerCount <= 8) {
+                        const scoreText = Number.isInteger(points) ? points : points.toFixed(1);
+                        const historyText = label ? label : `${scoreText} pts`;
+                        this.scoreLancerSpans[this.lancerCount - 1].textContent = historyText;
+                    }
+                }
+                
+                this.updateUndoButtonState();
+            }
+
+            // NOUVEAU: Gère l'état activé/désactivé du bouton Annuler
+            updateUndoButtonState() {
+                if (this.undoButton) {
+                    this.undoButton.disabled = this.lancerCount === 0;
+                }
+            }
+
+            flash(element) {
+                const flashClass = element.classList.contains('demi-cercle') ? 'demi-cercle-flash' : 'zone-flash';
+                element.classList.add(flashClass);
+                setTimeout(() => {
+                    element.classList.remove(flashClass);
+                }, 150);
+            }
+
+            startResetTimer() {
+                this.scoreDisplay.classList.add('resetting');
+                this.resetTimer = setTimeout(() => {
+                    this.resetGame();
+                    this.scoreDisplay.classList.remove('resetting');
+                }, 2000);
+            }
+
+            clearResetTimer() {
+                clearTimeout(this.resetTimer);
+                this.scoreDisplay.classList.remove('resetting');
+            }
+        }
+
 
         // Attend que le contenu du DOM soit entièrement chargé avant d'exécuter le script.
         document.addEventListener('DOMContentLoaded', () => {
@@ -1140,7 +1605,7 @@
             class DiscDogScorer {
                 constructor() {
                     // Initialisation des propriétés de l'application
-                    this.version = '1.8.0'; // Version mise à jour
+                    this.version = '3.0.1'; // Version mise à jour
                     this.currentView = 'measure';
                     this.editingRunId = null;
                     this.dogProfiles = [];
@@ -1160,7 +1625,7 @@
                         fr: '🇫🇷',
                         en: '🇬🇧',
                         es: '🇪🇸',
-                        it: '🇮🇹',
+                        it: '🇮�',
                         de: '🇩🇪'
                     };
 
@@ -1194,11 +1659,14 @@
                     this.csvButtonsEnabled = (localStorage.getItem('csvButtonsEnabled') || 'true') === 'true';
                     this.advancedStatsVisible = (localStorage.getItem('advancedStatsVisible') || 'false') === 'true';
                     this.faultButtonEnabled = (localStorage.getItem('faultButtonEnabled') || 'false') === 'true';
-                    this.useTakeAsThrow = (localStorage.getItem('useTakeAsThrow') || 'true') === 'true';
+                    this.useTakeAsThrow = (localStorage.getItem('useTakeAsThrow') || 'false') === 'true';
                     
                     this.initializeApp();
                     this.bindEvents();
                     this.loadOptions();
+                    
+                    // Initialiser le second module de jeu
+                    new TossAndCatchScorer();
                 }
 
                 /**
@@ -1270,7 +1738,7 @@
                  * Lie tous les événements des éléments de l'interface utilisateur à leurs fonctions respectives.
                  */
                 bindEvents() {
-                    document.getElementById('homeNav').addEventListener('click', () => this.navigateTo('measure'));
+                    document.getElementById('homeNav').addEventListener('click', () => this.toggleHomeView());
                     document.getElementById('historyNav').addEventListener('click', () => this.navigateTo('history'));
                     document.getElementById('optionsNav').addEventListener('click', () => this.navigateTo('options'));
                     document.getElementById('catchBtn').addEventListener('click', () => this.addAction('C'));
@@ -1461,6 +1929,14 @@
                 }
                 
                 /**
+                 * Bascule entre la vue "Catch Ratio" et "Toss & Catch".
+                 */
+                toggleHomeView() {
+                    const targetView = (this.currentView === 'measure' || this.currentView === 'results') ? 'tossAndCatch' : 'measure';
+                    this.navigateTo(targetView);
+                }
+                
+                /**
                  * Gère la navigation entre les différentes vues de l'application.
                  * @param {string} view - L'ID de la vue à afficher.
                  */
@@ -1483,7 +1959,9 @@
                  * @returns {boolean}
                  */
                 needsConfirmation() {
-                    return this.isRunning || (this.isRunCompleted && !this.isRunSaved);
+                    // Only applies to Catch Ratio part
+                    return (this.currentView === 'measure' || this.currentView === 'results') && 
+                           (this.isRunning || (this.isRunCompleted && !this.isRunSaved));
                 }
 
                 /**
@@ -1493,20 +1971,26 @@
                 showView(viewId) {
                     const currentViewEl = document.querySelector('.view.active');
                     const nextViewEl = document.getElementById(viewId + 'View');
+                    
                     if (!nextViewEl || (currentViewEl === nextViewEl && this.currentView === viewId)) {
                         return;
                     }
+                    
                     document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
-                    const navMap = { measure: 'homeNav', results: 'homeNav', history: 'historyNav', options: 'optionsNav' };
+                    const navMap = { measure: 'homeNav', results: 'homeNav', tossAndCatch: 'homeNav', history: 'historyNav', options: 'optionsNav' };
                     const activeNav = document.getElementById(navMap[viewId] || 'homeNav');
                     if (activeNav) activeNav.classList.add('active');
+                    
                     this.currentView = viewId;
+                    
                     if (currentViewEl) {
                         currentViewEl.classList.remove('active');
                         currentViewEl.classList.add('view-exit');
                     }
+                    
                     nextViewEl.classList.remove('view-exit');
                     nextViewEl.classList.add('active');
+                    
                     if (viewId === 'history') this.loadHistory();
                     if (viewId === 'options') {
                         this.displayDogProfiles();
@@ -2674,3 +3158,4 @@
     </script>
 </body>
 </html>
+�
