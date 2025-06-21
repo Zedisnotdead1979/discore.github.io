@@ -1,5 +1,3 @@
-![guide-en](https://github.com/user-attachments/assets/b5e41759-f760-4d13-bba6-e7b678fbe997)
+![guide-en](https://github.com/user-attachments/assets/94bea150-a31d-468f-a0f4-317b8c806598)
 
-![guide-fr](https://github.com/user-attachments/assets/509ba2d9-fd0e-468d-a569-0436c6510380)
-
-
+![guide-fr](https://github.com/user-attachments/assets/865f8d69-2abd-4d35-b830-0f17f1914cb9)
