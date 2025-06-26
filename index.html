@@ -51,6 +51,32 @@
             border-color: #2196F3;
             background-color: #e7f3fe;
         }
+        
+        .disclaimer-box {
+            background-color: #fffbe6;
+            border: 1px solid #ffe58f;
+            border-left: 5px solid #faad14;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .disclaimer-box h3 {
+            margin-top: 0;
+            color: #faad14;
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+        }
+        .disclaimer-box h3 .material-icons {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .disclaimer-box ul {
+            padding-left: 20px;
+        }
+        .disclaimer-box li {
+            margin-bottom: 10px;
+        }
 
         .guide-header {
             text-align: center;
@@ -305,6 +331,14 @@
             <button class="lang-btn" onclick="changeLanguage('de')" title="Deutsch">🇩🇪</button>
             <button class="lang-btn" onclick="changeLanguage('it')" title="Italiano">🇮🇹</button>
         </div>
+
+        <div class="disclaimer-box">
+            <h3 data-i18n-key="disclaimer_title"><span class="material-icons">warning</span></h3>
+            <p data-i18n-key="disclaimer_p1"></p>
+            <ul data-i18n-key="disclaimer_ul" data-i18n-type="list"></ul>
+            <p data-i18n-key="disclaimer_p2"></p>
+        </div>
+
         <header class="guide-header">
             <h1 data-i18n-key="guide_title"></h1>
             <p data-i18n-key="guide_subtitle"></p>
@@ -547,6 +581,10 @@
     <script>
         const translations = {
             fr: {
+                "disclaimer_title": "Avis Important",
+                "disclaimer_p1": "Merci d'utiliser Catch Ratio ToolBox ! Veuillez prendre note des points suivants :",
+                "disclaimer_ul": ["<strong>L'application est en phase de test :</strong> Bien qu'elle ait été testée, certaines fonctionnalités pourraient présenter des bugs.", "<strong>Stockage des données :</strong> L'application utilise le 'localStorage' de votre navigateur. Cela signifie que toutes vos données (runs, profils) sont stockées <strong>uniquement sur cet appareil et dans ce navigateur</strong>.", "<strong>Perte de données :</strong> Si vous effacez les données de votre navigateur (cache, cookies, etc.), <strong>vous perdrez toutes les données de l'application</strong>. Pensez à utiliser la fonction de <strong>Backup</strong> régulièrement !"],
+                "disclaimer_p2": "Une version finale, potentiellement avec un stockage en ligne, sera envisagée après la phase de test et les retours des utilisateurs.",
                 "guide_title": "Guide Interactif de <span class=\"logo\">Catch Ratio ToolBox</span>",
                 "guide_subtitle": "Découvrez comment utiliser chaque fonctionnalité grâce à des exemples visuels.",
                 "section_catch_ratio_title": "Le Module \"Catch Ratio\"",
@@ -586,6 +624,10 @@
                 "app_text_total_throws": "Total Lancés :", "app_text_catch": "CATCH", "app_text_drop": "DROP", "app_text_take": "TAKE", "app_text_fault": "Faute", "app_text_save_run": "Sauvegarder le Run", "app_text_dog_name": "Nom du chien", "app_text_tag_preview": "Sera sauvegardé comme : #Run2", "app_text_clouds": "Couverture nuageuse", "app_text_temp": "Température : 22°C", "app_text_wind": "Vent", "app_text_notes": "Notes (facultatif)", "app_text_notes_placeholder": "Session axée sur les lancers longs. Bonne motivation malgré le vent.", "app_text_cancel": "Annuler", "app_text_register": "Enregistrer", "app_text_date": "Date :", "app_text_time": "Heure :", "app_text_duration": "Temps :", "app_text_ratio": "Catch Ratio :", "app_text_throws": "Lancés :", "app_text_catches_label": "Catches :", "app_text_drops_label": "Drops :", "app_text_takes_label": "Takes :", "app_text_adv_stats_title": "Statistiques Avancées", "app_text_adv_start": "Ratio Début (30s) :", "app_text_adv_end": "Ratio Fin (30s) :", "app_text_adv_streak": "Meilleure Série :", "app_text_adv_consistency": "Consistance :", "app_text_notes_example": "Bonne session, un peu de fatigue sur la fin.", "app_text_share_card_header": "Catch Ratio", "app_text_date_full": "mardi 25 juin 2025", "app_text_run_tag": "Run 12", "app_text_catches_label_card": "Catches", "app_text_drops_label_card": "Drops", "app_text_takes_label_card": "Takes", "app_text_total_label_card": "Total", "app_text_share_footer": "Fait avec Catch Ratio ToolBox", "app_text_color_theme": "Thème de Couleur", "app_text_theme_toggle": "Thème Sombre/Clair", "app_text_theme_example": "Exemple d'un thème violet en mode sombre.", "app_text_interface_title": "Interface", "app_text_transition": "Type de Transition", "app_text_transition_h": "Horizontale", "app_text_transition_cube": "Cube", "app_text_transition_fade": "Fondu", "app_text_temp_unit": "Unité de Température", "app_text_language": "Langue"
             },
             en: {
+                "disclaimer_title": "Important Notice",
+                "disclaimer_p1": "Thank you for using Catch Ratio ToolBox! Please note the following:",
+                "disclaimer_ul": ["<strong>The app is in a testing phase:</strong> Although it has been tested, some features might contain bugs.", "<strong>Data Storage:</strong> The application uses your browser's 'localStorage'. This means all your data (runs, profiles) is stored <strong>only on this device and in this browser</strong>.", "<strong>Data Loss:</strong> If you clear your browser's data (cache, cookies, etc.), <strong>you will lose all application data</strong>. Remember to use the <strong>Backup</strong> feature regularly!"],
+                "disclaimer_p2": "A final version, potentially with online storage, will be considered after the testing phase and user feedback.",
                 "guide_title": "Interactive Guide for <span class=\"logo\">Catch Ratio ToolBox</span>",
                 "guide_subtitle": "Discover how to use each feature with visual examples.",
                 "section_catch_ratio_title": "The \"Catch Ratio\" Module",
@@ -625,6 +667,10 @@
                 "app_text_total_throws": "Total Throws:", "app_text_catch": "CATCH", "app_text_drop": "DROP", "app_text_take": "TAKE", "app_text_fault": "Fault", "app_text_save_run": "Save Run", "app_text_dog_name": "Dog's Name", "app_text_tag_preview": "Will be saved as: #Run2", "app_text_clouds": "Cloud Cover", "app_text_temp": "Temperature: 22°C", "app_text_wind": "Wind", "app_text_notes": "Notes (optional)", "app_text_notes_placeholder": "Session focused on long throws. Good motivation despite the wind.", "app_text_cancel": "Cancel", "app_text_register": "Save", "app_text_date": "Date:", "app_text_time": "Time:", "app_text_duration": "Duration:", "app_text_ratio": "Catch Ratio:", "app_text_throws": "Throws:", "app_text_catches_label": "Catches:", "app_text_drops_label": "Drops:", "app_text_takes_label": "Takes:", "app_text_adv_stats_title": "Advanced Stats", "app_text_adv_start": "Start Ratio (30s):", "app_text_adv_end": "End Ratio (30s):", "app_text_adv_streak": "Best Streak:", "app_text_adv_consistency": "Consistency:", "app_text_notes_example": "Good session, a bit tired at the end.", "app_text_share_card_header": "Catch Ratio", "app_text_date_full": "Tuesday, June 25, 2025", "app_text_run_tag": "Run 12", "app_text_catches_label_card": "Catches", "app_text_drops_label_card": "Drops", "app_text_takes_label_card": "Takes", "app_text_total_label_card": "Total", "app_text_share_footer": "Made with Catch Ratio ToolBox", "app_text_color_theme": "Color Theme", "app_text_theme_toggle": "Dark/Light Theme", "app_text_theme_example": "Example of a purple theme in dark mode.", "app_text_interface_title": "Interface", "app_text_transition": "Transition Type", "app_text_transition_h": "Horizontal", "app_text_transition_cube": "Cube", "app_text_transition_fade": "Fade", "app_text_temp_unit": "Temperature Unit", "app_text_language": "Language"
             },
             es: {
+                "disclaimer_title": "Aviso Importante",
+                "disclaimer_p1": "¡Gracias por usar Catch Ratio ToolBox! Por favor, tenga en cuenta lo siguiente:",
+                "disclaimer_ul": ["<strong>La aplicación está en fase de pruebas:</strong> Aunque ha sido probada, algunas funciones podrían contener errores.", "<strong>Almacenamiento de datos:</strong> La aplicación utiliza el 'localStorage' de su navegador. Esto significa que todos sus datos (carreras, perfiles) se almacenan <strong>únicamente en este dispositivo y en este navegador</strong>.", "<strong>Pérdida de datos:</strong> Si borra los datos de su navegador (caché, cookies, etc.), <strong>perderá todos los datos de la aplicación</strong>. ¡Recuerde usar la función de <strong>Copia de seguridad</strong> regularmente!"],
+                "disclaimer_p2": "Se considerará una versión final, potencialmente con almacenamiento en línea, después de la fase de pruebas y los comentarios de los usuarios.",
                 "guide_title": "Guía Interactiva de <span class=\"logo\">Catch Ratio ToolBox</span>",
                 "guide_subtitle": "Descubra cómo usar cada función con ejemplos visuales.",
                 "section_catch_ratio_title": "El Módulo \"Catch Ratio\"",
@@ -664,6 +710,10 @@
                 "app_text_total_throws": "Total Lanzados:", "app_text_catch": "CATCH", "app_text_drop": "DROP", "app_text_take": "TAKE", "app_text_fault": "Falta", "app_text_save_run": "Guardar Carrera", "app_text_dog_name": "Nombre del perro", "app_text_tag_preview": "Se guardará como: #Carrera2", "app_text_clouds": "Cobertura de nubes", "app_text_temp": "Temperatura: 22°C", "app_text_wind": "Viento", "app_text_notes": "Notas (opcional)", "app_text_notes_placeholder": "Sesión centrada en lanzamientos largos. Buena motivación a pesar del viento.", "app_text_cancel": "Cancelar", "app_text_register": "Guardar", "app_text_date": "Fecha:", "app_text_time": "Hora:", "app_text_duration": "Duración:", "app_text_ratio": "Catch Ratio:", "app_text_throws": "Lanzados:", "app_text_catches_label": "Catches:", "app_text_drops_label": "Drops:", "app_text_takes_label": "Takes:", "app_text_adv_stats_title": "Estadísticas Avanzadas", "app_text_adv_start": "Ratio Inicio (30s):", "app_text_adv_end": "Ratio Fin (30s):", "app_text_adv_streak": "Mejor Racha:", "app_text_adv_consistency": "Consistencia:", "app_text_notes_example": "Buena sesión, un poco de cansancio al final.", "app_text_share_card_header": "Catch Ratio", "app_text_date_full": "martes, 25 de junio de 2025", "app_text_run_tag": "Carrera 12", "app_text_catches_label_card": "Catches", "app_text_drops_label_card": "Drops", "app_text_takes_label_card": "Takes", "app_text_total_label_card": "Total", "app_text_share_footer": "Hecho con Catch Ratio ToolBox", "app_text_color_theme": "Tema de Color", "app_text_theme_toggle": "Tema Oscuro/Claro", "app_text_theme_example": "Ejemplo de un tema morado en modo oscuro.", "app_text_interface_title": "Interfaz", "app_text_transition": "Tipo de Transición", "app_text_transition_h": "Horizontal", "app_text_transition_cube": "Cubo", "app_text_transition_fade": "Fundido", "app_text_temp_unit": "Unidad de Temperatura", "app_text_language": "Idioma"
             },
             de: {
+                "disclaimer_title": "Wichtiger Hinweis",
+                "disclaimer_p1": "Vielen Dank, dass Sie die Catch Ratio ToolBox verwenden! Bitte beachten Sie die folgenden Punkte:",
+                "disclaimer_ul": ["<strong>Die App befindet sich in einer Testphase:</strong> Obwohl sie getestet wurde, können einige Funktionen Fehler enthalten.", "<strong>Datenspeicherung:</strong> Die Anwendung verwendet den 'localStorage' Ihres Browsers. Das bedeutet, dass alle Ihre Daten (Läufe, Profile) <strong>nur auf diesem Gerät und in diesem Browser</strong> gespeichert werden.", "<strong>Datenverlust:</strong> Wenn Sie die Daten Ihres Browsers (Cache, Cookies usw.) löschen, gehen <strong>alle Anwendungsdaten verloren</strong>. Denken Sie daran, die <strong>Backup</strong>-Funktion regelmäßig zu verwenden!"],
+                "disclaimer_p2": "Eine endgültige Version, möglicherweise mit Online-Speicher, wird nach der Testphase und dem Feedback der Benutzer in Betracht gezogen.",
                 "guide_title": "Interaktiver Leitfaden für die <span class=\"logo\">Catch Ratio ToolBox</span>",
                 "guide_subtitle": "Entdecken Sie, wie Sie jede Funktion mit visuellen Beispielen nutzen können.",
                 "section_catch_ratio_title": "Das „Catch Ratio“-Modul",
@@ -703,6 +753,10 @@
                 "app_text_total_throws": "Würfe Gesamt:", "app_text_catch": "CATCH", "app_text_drop": "DROP", "app_text_take": "TAKE", "app_text_fault": "Fehler", "app_text_save_run": "Lauf speichern", "app_text_dog_name": "Name des Hundes", "app_text_tag_preview": "Wird gespeichert als: #Lauf2", "app_text_clouds": "Wolkendecke", "app_text_temp": "Temperatur: 22°C", "app_text_wind": "Wind", "app_text_notes": "Notizen (optional)", "app_text_notes_placeholder": "Sitzung konzentrierte sich auf lange Würfe. Gute Motivation trotz des Windes.", "app_text_cancel": "Abbrechen", "app_text_register": "Speichern", "app_text_date": "Datum:", "app_text_time": "Uhrzeit:", "app_text_duration": "Dauer:", "app_text_ratio": "Catch Ratio:", "app_text_throws": "Würfe:", "app_text_catches_label": "Catches:", "app_text_drops_label": "Drops:", "app_text_takes_label": "Takes:", "app_text_adv_stats_title": "Erweiterte Statistiken", "app_text_adv_start": "Start-Ratio (30s):", "app_text_adv_end": "End-Ratio (30s):", "app_text_adv_streak": "Beste Serie:", "app_text_adv_consistency": "Konsistenz:", "app_text_notes_example": "Gute Sitzung, am Ende etwas müde.", "app_text_share_card_header": "Catch Ratio", "app_text_date_full": "Dienstag, 25. Juni 2025", "app_text_run_tag": "Lauf 12", "app_text_catches_label_card": "Catches", "app_text_drops_label_card": "Drops", "app_text_takes_label_card": "Takes", "app_text_total_label_card": "Gesamt", "app_text_share_footer": "Erstellt mit Catch Ratio ToolBox", "app_text_color_theme": "Farbthema", "app_text_theme_toggle": "Dunkles/Helles Thema", "app_text_theme_example": "Beispiel für ein violettes Thema im Dunkelmodus.", "app_text_interface_title": "Oberfläche", "app_text_transition": "Übergangstyp", "app_text_transition_h": "Horizontal", "app_text_transition_cube": "Würfel", "app_text_transition_fade": "Überblenden", "app_text_temp_unit": "Temperatureinheit", "app_text_language": "Sprache"
             },
             it: {
+                "disclaimer_title": "Avviso Importante",
+                "disclaimer_p1": "Grazie per aver utilizzato Catch Ratio ToolBox! Si prega di notare quanto segue:",
+                "disclaimer_ul": ["<strong>L'app è in fase di test:</strong> sebbene sia stata testata, alcune funzionalità potrebbero contenere bug.", "<strong>Archiviazione dei dati:</strong> l'applicazione utilizza il 'localStorage' del tuo browser. Ciò significa che tutti i tuoi dati (corse, profili) sono archiviati <strong>solo su questo dispositivo e in questo browser</strong>.", "<strong>Perdita di dati:</strong> se cancelli i dati del tuo browser (cache, cookie, ecc.), <strong>perderai tutti i dati dell'applicazione</strong>. Ricorda di utilizzare regolarmente la funzione di <strong>Backup</strong>!"],
+                "disclaimer_p2": "Una versione finale, potenzialmente con archiviazione online, sarà presa in considerazione dopo la fase di test e il feedback degli utenti.",
                 "guide_title": "Guida Interattiva di <span class=\"logo\">Catch Ratio ToolBox</span>",
                 "guide_subtitle": "Scopri come utilizzare ogni funzionalità con esempi visivi.",
                 "section_catch_ratio_title": "Il Modulo \"Catch Ratio\"",
